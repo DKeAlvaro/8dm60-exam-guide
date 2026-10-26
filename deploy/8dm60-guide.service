@@ -7,6 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/root/research/8dm60-exam-guide
 EnvironmentFile=/etc/8dm60-guide.env
+ExecStartPre=/bin/sh /root/pocket-vault-2/bin/cc-router-up
 ExecStart=/usr/bin/node /root/research/8dm60-exam-guide/server.js
 Restart=on-failure
 RestartSec=3

@@ -10,7 +10,7 @@ A deliberately sparse exam skeleton for **8DM60 Multimodal AI in Biomedicine**. 
 - `deploy/`: systemd and Caddy configuration.
 - Course references stay outside this repository at `/root/courses/current/8DM60/md/` on the VPS.
 
-The browser never receives model credentials. A request starts real Claude Code in restricted, non-interactive mode with read/write/edit tools. Claude edits `public/`; the backend detects changes, commits them, and pushes them. The page reloads after a completed edit.
+The browser never receives model credentials. A request starts real Claude Code in restricted, non-interactive mode with read/write/edit tools. Claude edits `public/`; the backend detects changes, commits them, and pushes them. The page reloads after a completed edit. `agent.settings.json` connects it to the VPS's existing Claude Code router; systemd ensures that router is running. No API key is stored in this repository.
 
 ## Local checks
 

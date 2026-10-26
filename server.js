@@ -14,7 +14,7 @@ const PORT = Number(process.env.PORT || 8794);
 const HOST = process.env.HOST || '127.0.0.1';
 const TOKEN = process.env.GUIDE_TOKEN || '';
 const CLAUDE_BIN = process.env.CLAUDE_BIN || '/usr/bin/claude';
-const MODEL = process.env.GUIDE_MODEL || 'claude-opus-5-5';
+const MODEL = process.env.GUIDE_MODEL || 'kimi-k3.1-pro';
 const AGENT_TIMEOUT_MS = Number(process.env.AGENT_TIMEOUT_MS || 8 * 60 * 1000);
 const SYSTEM_PROMPT = fs.readFileSync(path.join(ROOT, 'AGENT_PROMPT.md'), 'utf8');
 const jobs = new Map();
@@ -145,6 +145,7 @@ function runClaude(prompt, sessionId, resume) {
       '-p',
       '--output-format', 'json',
       '--restricted',
+      '--settings', path.join(ROOT, 'agent.settings.json'),
       '--permission-mode', 'acceptEdits',
       '--permission-prompts', 'none',
       '--tools', 'Read,Write,Edit,Glob,Grep',
