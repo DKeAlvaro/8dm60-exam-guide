@@ -28,3 +28,4 @@
 ## How this grows
 
 Select **Ask** beside one question to add only that explanation. Use **Ask Claude Code** for a UI change. Claude Code edits these Markdown pages directly and rebuilds the site.
+<!-- Claude Code connection verified -->
