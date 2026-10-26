@@ -3,3 +3,6 @@
 *.bak
 .DS_Store
 node_modules/
+site/
+.venv/
+.site-next/

@@ -8,8 +8,9 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 
 const ROOT = __dirname;
-const PUBLIC_DIR = path.join(ROOT, 'public');
+const SITE_DIR = path.join(ROOT, 'site');
 const COURSE_DIR = process.env.COURSE_DIR || '/root/courses/current/8DM60/md';
+const MKDOCS_BIN = process.env.MKDOCS_BIN || 'mkdocs';
 const PORT = Number(process.env.PORT || 8794);
 const HOST = process.env.HOST || '127.0.0.1';
 const TOKEN = process.env.GUIDE_TOKEN || '';
@@ -85,23 +86,31 @@ function cleanContext(value) {
     topic: text(value.topic, 200),
     label: text(value.label, 60),
     question: text(value.question, 2500),
-    source: text(value.source, 250)
+    source: text(value.source, 250),
+    file: /^docs\/[a-z0-9-]+\.md$/.test(text(value.file, 100)) ? text(value.file, 100) : ''
   };
 }
 
-function publicSnapshot() {
+function sourceSnapshot() {
   const hash = crypto.createHash('sha256');
-  function walk(directory) {
-    for (const entry of fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      const full = path.join(directory, entry.name);
+  function walk(target) {
+    const stat = fs.statSync(target);
+    if (stat.isFile()) {
+      hash.update(path.relative(ROOT, target));
+      hash.update(fs.readFileSync(target));
+      return;
+    }
+    for (const entry of fs.readdirSync(target, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const full = path.join(target, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.isFile()) {
-        hash.update(path.relative(PUBLIC_DIR, full));
+        hash.update(path.relative(ROOT, full));
         hash.update(fs.readFileSync(full));
       }
     }
   }
-  walk(PUBLIC_DIR);
+  walk(path.join(ROOT, 'docs'));
+  walk(path.join(ROOT, 'mkdocs.yml'));
   return hash.digest('hex');
 }
 
@@ -133,7 +142,7 @@ function runProcess(command, args, options = {}) {
 }
 
 async function commitAndPush(message) {
-  await runProcess('git', ['add', '--', 'public']);
+  await runProcess('git', ['add', '--', 'docs', 'mkdocs.yml']);
   const summary = message.replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, '').slice(0, 60).trim();
   await runProcess('git', ['commit', '-m', `guide: ${summary || 'update from ask'}`]);
   await runProcess('git', ['push', 'origin', 'HEAD']);
@@ -211,20 +220,22 @@ function runClaude(prompt, sessionId, resume) {
 }
 
 async function runJob(job, input) {
-  const before = publicSnapshot();
+  const before = sourceSnapshot();
   const sessionId = input.sessionId || crypto.randomUUID();
   const contextText = input.context ? `\n\nSelected context:\n${JSON.stringify(input.context, null, 2)}` : '\n\nSelected context: whole guide (no individual question selected).';
-  const prompt = `${input.message}${contextText}\n\nRemember: perform the requested edit directly in public/, then reply with one short summary.`;
+  const prompt = `${input.message}${contextText}\n\nRemember: perform the requested edit directly in the Markdown/MkDocs source, then reply with one short summary.`;
 
   job.state = 'running';
   job.startedAt = Date.now();
   try {
     const result = await runClaude(prompt, sessionId, Boolean(input.sessionId));
-    const changed = before !== publicSnapshot();
+    const changed = before !== sourceSnapshot();
     job.changed = changed;
     job.sessionId = result.sessionId;
     job.result = result.result;
     if (changed) {
+      await runProcess(process.execPath, ['scripts/verify.js']);
+      await runProcess(MKDOCS_BIN, ['build', '--clean']);
       try {
         await commitAndPush(input.message);
       } catch (error) {
@@ -253,9 +264,9 @@ async function serveStatic(req, res, pathname) {
     sendJson(res, 400, { error: 'Invalid path' });
     return;
   }
-  const requested = decoded === '/' ? '/index.html' : decoded;
-  const file = path.resolve(PUBLIC_DIR, `.${requested}`);
-  if (file !== PUBLIC_DIR && !file.startsWith(`${PUBLIC_DIR}${path.sep}`)) {
+  const requested = decoded === '/' ? '/index.html' : decoded.endsWith('/') ? `${decoded}index.html` : decoded;
+  const file = path.resolve(SITE_DIR, `.${requested}`);
+  if (file !== SITE_DIR && !file.startsWith(`${SITE_DIR}${path.sep}`)) {
     sendJson(res, 403, { error: 'Forbidden' });
     return;
   }
@@ -266,7 +277,7 @@ async function serveStatic(req, res, pathname) {
     const headers = {
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'Content-Length': stat.size,
-      'Cache-Control': ['.html', '.css', '.js'].includes(ext) ? 'no-cache' : 'public, max-age=3600',
+      'Cache-Control': ['.html', '.css', '.js', '.json'].includes(ext) ? 'no-cache' : 'public, max-age=3600',
       'X-Content-Type-Options': 'nosniff'
     };
     res.writeHead(200, headers);

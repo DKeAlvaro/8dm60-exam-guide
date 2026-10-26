@@ -1,16 +1,18 @@
 # 8DM60 exam guide
 
-A deliberately sparse exam skeleton for **8DM60 Multimodal AI in Biomedicine**. It starts with topics, subtitles, possible exam questions, and pass milestones. Explanations and UI changes are added only when Álvaro asks Claude Code from the page.
+A deliberately sparse **MkDocs Material** exam skeleton for **8DM60 Multimodal AI in Biomedicine**. It starts with Markdown topic pages, possible exam questions, and pass milestones. Explanations and UI changes are added only when Álvaro asks Claude Code from the page.
 
 ## Architecture
 
-- `public/`: the complete static guide; no framework or build step.
-- `server.js`: dependency-free Node server, owner-key authentication, background Claude Code jobs, and git snapshots.
+- `docs/*.md`: one Markdown page per topic; generated explanations live in each question's `response` block.
+- `docs/javascripts/live-edit.js`: question context, owner-key handling, and Claude Code job polling.
+- `docs/stylesheets/`: the same Material visual language as the 5CTA0 guide.
+- `mkdocs.yml`: Material theme, navigation, Markdown extensions, and KaTeX.
+- `server.js`: dependency-free Node static server, authenticated Claude Code jobs, verification, MkDocs builds, and git snapshots.
 - `AGENT_PROMPT.md`: editing contract passed to Claude Code.
-- `deploy/`: systemd and Caddy configuration.
-- Course references stay outside this repository at `/root/courses/current/8DM60/md/` on the VPS.
+- `site/`: generated output, ignored by git and rebuilt automatically.
 
-The browser never receives model credentials. A request starts real Claude Code in restricted, non-interactive mode with read/write/edit tools. Claude edits `public/`; the backend detects changes, commits them, and pushes them. The page reloads after a completed edit. `agent.settings.json` connects it to the VPS's existing Claude Code router; systemd ensures that router is running. No API key is stored in this repository.
+The browser never receives model credentials. A request starts real Claude Code in restricted, non-interactive mode with read/write/edit tools. Claude edits the Markdown/MkDocs source; the backend validates it, runs `mkdocs build --clean`, commits, and pushes. The page reloads after a completed edit. `agent.settings.json` connects to the VPS's existing Claude Code router; no API key is stored in this repository.
 
 ## Local checks
 
@@ -18,12 +20,13 @@ The browser never receives model credentials. A request starts real Claude Code 
 npm test
 ```
 
-No `npm install` is needed.
+Requires Node 20+, Python, and `mkdocs-material`. There are no Node dependencies to install.
 
 ## Run
 
 ```sh
-GUIDE_TOKEN='replace-me' node server.js
+mkdocs build --clean
+GUIDE_TOKEN='replace-me' MKDOCS_BIN='mkdocs' node server.js
 ```
 
 Defaults to `127.0.0.1:8794`. Optional environment variables: `HOST`, `PORT`, `COURSE_DIR`, `CLAUDE_BIN`, `GUIDE_MODEL`, `AGENT_TIMEOUT_MS`.
@@ -32,7 +35,7 @@ Defaults to `127.0.0.1:8794`. Optional environment variables: `HOST`, `PORT`, `C
 
 Open the owner URL containing `#key=...` once. The key is moved to localStorage and removed from the address bar. It is required only for `/api/ask` and `/api/jobs/*`; the guide itself is readable without it.
 
-Choose **Ask** on a question to give Claude Code that exact context, or **Ask Claude Code** for a whole-guide/UI request. Follow-up requests resume the browser's Claude Code session.
+Choose **Ask** on a question to give Claude Code that exact Markdown file, heading ID, and course source, or **Ask Claude Code** for a whole-guide/UI request. Follow-up requests resume the browser's Claude Code session.
 
 ## Source
 

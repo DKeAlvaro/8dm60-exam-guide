@@ -5,7 +5,7 @@
   "description": "Sparse, question-driven 8DM60 exam guide edited live by Claude Code",
   "scripts": {
     "start": "node server.js",
-    "test": "node scripts/verify.js"
+    "test": "node scripts/verify.js && mkdocs build --clean"
   },
   "engines": {
     "node": ">=20"
