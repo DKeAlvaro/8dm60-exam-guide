@@ -1,0 +1,13 @@
+{
+  "name": "8dm60-exam-guide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sparse, question-driven 8DM60 exam guide edited live by Claude Code",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node scripts/verify.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

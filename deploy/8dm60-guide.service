@@ -1,0 +1,18 @@
+[Unit]
+Description=8DM60 interactive exam guide
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/research/8dm60-exam-guide
+EnvironmentFile=/etc/8dm60-guide.env
+ExecStart=/usr/bin/node /root/research/8dm60-exam-guide/server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
