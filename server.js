@@ -76,6 +76,60 @@ async function readJson(req) {
   }
 }
 
+// Model catalog for the browser picker: whatever the local router serves
+// (PrimaLabs + Kimi), cached briefly so the page can list providers and models.
+const ROUTER_URL = process.env.CC_ROUTER_URL || 'http://127.0.0.1:8787';
+const FALLBACK_MODELS = [
+  { id: 'kimi-k3.1-pro', name: 'kimi-k3.1-pro', context: 1048576 },
+  { id: 'primalabs-ai/MiMo-V2.6-Pro', name: 'MiMo-V2.6-Pro', context: 1048576 },
+  { id: 'primalabs-ai/DeepSeek-V4.1-Flash-1017', name: 'DeepSeek-V4.1-Flash-1017', context: 1048576 },
+  { id: 'primalabs-ai/GLM-5.3-Flash', name: 'GLM-5.3-Flash', context: 262144 },
+  { id: 'primalabs-ai/Nemotron-3.5-Lightning-NVFP4', name: 'Nemotron-3.5-Lightning-NVFP4', context: 1048576 }
+];
+const MODEL_ID = /^[A-Za-z0-9][\w./:-]{0,99}$/;
+let modelCache = { at: 0, models: null };
+
+function providerOf(id) {
+  const value = String(id || '').toLowerCase();
+  if (value.includes('primalabs')) return 'PrimaLabs';
+  if (value.startsWith('kimi') || value.includes('moonshotai/')) return 'Moonshot';
+  return 'Other';
+}
+
+function fetchModels() {
+  if (modelCache.models && Date.now() - modelCache.at < 5 * 60 * 1000) {
+    return Promise.resolve(modelCache.models);
+  }
+  return new Promise((resolve) => {
+    const done = (models) => {
+      modelCache = { at: Date.now(), models };
+      resolve(models);
+    };
+    const req = http.get(`${ROUTER_URL}/v1/models`, { timeout: 4000 }, (r) => {
+      let body = '';
+      r.on('data', (chunk) => { if (body.length < 256 * 1024) body += chunk; });
+      r.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          const models = (Array.isArray(parsed.data) ? parsed.data : [])
+            .map((m) => ({
+              id: String(m.id || ''),
+              name: String(m.display_name || m.id || ''),
+              context: Number(m.context_length) || 0,
+              provider: providerOf(m.id)
+            }))
+            .filter((m) => MODEL_ID.test(m.id));
+          done(models.length ? models : FALLBACK_MODELS.map((m) => ({ ...m, provider: providerOf(m.id) })));
+        } catch {
+          done(FALLBACK_MODELS.map((m) => ({ ...m, provider: providerOf(m.id) })));
+        }
+      });
+    });
+    req.on('error', () => done(FALLBACK_MODELS.map((m) => ({ ...m, provider: providerOf(m.id) }))));
+    req.on('timeout', () => { req.destroy(); done(FALLBACK_MODELS.map((m) => ({ ...m, provider: providerOf(m.id) }))); });
+  });
+}
+
 function cleanContext(value) {
   if (!value || typeof value !== 'object') return null;
   const text = (input, max) => typeof input === 'string' ? input.slice(0, max) : '';
@@ -85,7 +139,7 @@ function cleanContext(value) {
     topicId: text(value.topicId, 80),
     topic: text(value.topic, 200),
     label: text(value.label, 60),
-    question: text(value.question, 2500),
+    question: text(value.question, 6000),
     source: text(value.source, 250),
     file: /^docs\/[a-z0-9-]+\.md$/.test(text(value.file, 100)) ? text(value.file, 100) : ''
   };
@@ -148,7 +202,7 @@ async function commitAndPush(message) {
   await runProcess('git', ['push', 'origin', 'HEAD']);
 }
 
-function runClaude(prompt, sessionId, resume) {
+function runClaude(prompt, sessionId, resume, model) {
   return new Promise((resolve, reject) => {
     const args = [
       '-p',
@@ -159,7 +213,7 @@ function runClaude(prompt, sessionId, resume) {
       '--permission-prompts', 'none',
       '--tools', 'Read,Write,Edit,Glob,Grep',
       '--add-dir', COURSE_DIR,
-      '--model', MODEL,
+      '--model', model || MODEL,
       '--append-system-prompt', SYSTEM_PROMPT,
       '--prompt-suggestions', 'false'
     ];
@@ -228,7 +282,7 @@ async function runJob(job, input) {
   job.state = 'running';
   job.startedAt = Date.now();
   try {
-    const result = await runClaude(prompt, sessionId, Boolean(input.sessionId));
+    const result = await runClaude(prompt, sessionId, Boolean(input.sessionId), input.model);
     const changed = before !== sourceSnapshot();
     job.changed = changed;
     job.sessionId = result.sessionId;
@@ -295,6 +349,11 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 200, { ok: true, busy: Boolean(activeJob) });
       return;
     }
+    if (url.pathname === '/api/models' && (req.method === 'GET' || req.method === 'HEAD')) {
+      const models = await fetchModels();
+      sendJson(res, 200, { models, default: MODEL });
+      return;
+    }
     if (url.pathname === '/api/ask' && req.method === 'POST') {
       if (!authorized(req)) {
         sendJson(res, 401, { error: 'Valid owner key required' });
@@ -312,6 +371,11 @@ const server = http.createServer(async (req, res) => {
       }
       if (input.sessionId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.sessionId)) {
         sendJson(res, 400, { error: 'Invalid session ID' });
+        return;
+      }
+      input.model = typeof input.model === 'string' ? input.model.trim() : '';
+      if (input.model && !MODEL_ID.test(input.model)) {
+        sendJson(res, 400, { error: 'Invalid model' });
         return;
       }
       input.context = cleanContext(input.context);

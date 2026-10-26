@@ -35,7 +35,7 @@ Defaults to `127.0.0.1:8794`. Optional environment variables: `HOST`, `PORT`, `C
 
 Open the owner URL containing `#key=...` once. The key is moved to localStorage and removed from the address bar. It is required only for `/api/ask` and `/api/jobs/*`; the guide itself is readable without it.
 
-Choose **Ask** on a question to give Claude Code that exact Markdown file, heading ID, and course source, or **Ask Claude Code** for a whole-guide/UI request. Follow-up requests resume the browser's Claude Code session.
+Choose **Ask** on a question to give Claude Code that exact Markdown file, heading ID, and course source. Highlight any passage for an **Ask about this** bubble with that passage as context. The floating bubble (drag it anywhere) opens the panel for whole-guide/UI requests. The panel's MODEL row picks the model and provider for the job — the list comes from the local Claude router (`/api/models`, PrimaLabs + Moonshot) and is remembered per device. Follow-up requests resume the browser's Claude Code session.
 
 ## Source
 

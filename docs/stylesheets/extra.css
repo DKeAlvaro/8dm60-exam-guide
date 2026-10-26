@@ -103,6 +103,6 @@
 .response .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .8em; }
 
 @media print {
-  #ask-toggle, #ask-panel, .question-ask { display: none !important; }
+  #ask-ball, #ask-chip, #ask-panel, .question-ask { display: none !important; }
   .response { display: block !important; }
 }
