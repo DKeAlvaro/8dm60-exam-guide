@@ -167,6 +167,13 @@
       ball.addEventListener('pointercancel', up);
     });
 
+    ball.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openDrawer();
+      }
+    });
+
     /* ---------- the chip: "Ask about this" over any highlighted passage ---------- */
     const MAX_SELECTION = 6000;
     function hideChip() { chip.hidden = true; }
