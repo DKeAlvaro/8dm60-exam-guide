@@ -118,7 +118,7 @@ function runProcess(command, args, options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: ROOT,
-      env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+      env: { ...process.env, HOME: process.env.HOME || '/root', GIT_TERMINAL_PROMPT: '0' },
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let stdout = '';
@@ -168,7 +168,7 @@ function runClaude(prompt, sessionId, resume) {
 
     const child = spawn(CLAUDE_BIN, args, {
       cwd: ROOT,
-      env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+      env: { ...process.env, HOME: process.env.HOME || '/root', GIT_TERMINAL_PROMPT: '0' },
       stdio: ['pipe', 'pipe', 'pipe']
     });
     let stdout = '';

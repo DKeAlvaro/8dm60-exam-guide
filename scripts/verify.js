@@ -40,7 +40,7 @@ if (questionCount !== 66) errors.push(`Expected 66 skeleton questions, found ${q
 if (milestoneCount !== 35) errors.push(`Expected 35 milestones, found ${milestoneCount}`);
 if (responseCount !== questionCount) errors.push(`Question/response mismatch: ${questionCount} questions, ${responseCount} responses`);
 
-for (const file of ['server.js', 'docs/javascripts/live-edit.js', 'docs/javascripts/katex.js', 'scripts/verify.js']) {
+for (const file of ['server.js', 'docs/javascripts/live-edit.js', 'docs/javascripts/katex.js', 'scripts/verify.js', 'scripts/build.js']) {
   try { execFileSync(process.execPath, ['--check', path.join(root, file)], { stdio: 'pipe' }); }
   catch (error) { errors.push(`${file}: ${error.stderr}`); }
 }
