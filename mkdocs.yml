@@ -43,7 +43,7 @@ plugins:
 nav:
   - Start here: index.md
   - Cram sheet · 30 min: cram.md
-  - Multiple choice · answer key: mc-answer-key.md
+  - Multiple choice · practice: mc-answer-key.md
   - Past exercises · worked answers: past-exercises.md
   - Key figures: key-figures.md
   - Clinical workflow cases: workflow-cases.md
@@ -88,11 +88,13 @@ extra_javascript:
   - javascripts/katex.js
   - https://unpkg.com/katex@0.16.11/dist/katex.min.js
   - https://unpkg.com/katex@0.16.11/dist/contrib/auto-render.min.js
+  - javascripts/quiz.js
 
 extra_css:
   - https://unpkg.com/katex@0.16.11/dist/katex.min.css
   - https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap
   - stylesheets/extra.css
+  - stylesheets/quiz.css
 
 extra:
   generator: false

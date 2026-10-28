@@ -13,7 +13,7 @@
 | Time | Do this |
 | --- | --- |
 | 0–20 min | [Cram sheet](cram.md) — the whole course on one page. |
-| 20–40 min | [Multiple choice · answer key](mc-answer-key.md) — 20% of the grade and the traps are predictable. |
+| 20–40 min | [Multiple choice · practice](mc-answer-key.md) — 20% of the grade and the traps are predictable. |
 | 40–90 min | [Past exercises](past-exercises.md) — cover the answer, say yours out loud, then check. |
 | 90–110 min | The six topic pages below, skimming the answers. |
 | 110–120 min | [Clinical workflow cases](workflow-cases.md) — the numbers. |
