@@ -648,6 +648,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#terms-you-must-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terms you must know
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-answer-any-project-question" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -659,10 +670,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#questions-to-rehearse-out-loud" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        Questions to rehearse out loud
       
     </span>
   </a>
@@ -704,6 +715,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#terms-you-must-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terms you must know
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-answer-any-project-question" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -715,10 +737,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#questions-to-rehearse-out-loud" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        Questions to rehearse out loud
       
     </span>
   </a>
@@ -748,37 +770,80 @@
 <h1 id="your-project-15">Your project · 15%<a class="headerlink" href="#your-project-15" title="Permanent link">#</a></h1>
 <div class="meta"><span class="hot">Poster + code</span><span>15% of the grade</span><span>Be specific</span></div>
 
-<p class="lead">These questions are about <em>your</em> poster and code, so nobody can answer them for you. What follows is the shape of a good answer: one claim, one number, one limitation.</p>
+<p class="lead">These questions are about your poster and code, so the answers are yours. Below is the shape of a good answer and the terms you must be able to define on the spot.</p>
 
+<h2 id="terms-you-must-know">Terms you must know<a class="headerlink" href="#terms-you-must-know" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline</td>
+<td>The simplest reference result you must beat (majority class, logistic regression, no-change).</td>
+</tr>
+<tr>
+<td>Leakage</td>
+<td>Information in training/test that you would not have at prediction time, or that encodes the answer.</td>
+</tr>
+<tr>
+<td>Internal validation</td>
+<td>Held-out data from the same dataset.</td>
+</tr>
+<tr>
+<td>External validation</td>
+<td>Data collected independently, another site, period or population.</td>
+</tr>
+<tr>
+<td>Calibration</td>
+<td>Predicted risk versus observed risk.</td>
+</tr>
+<tr>
+<td>Confidence interval</td>
+<td>A range that expresses uncertainty around an estimate; overlapping intervals mean the difference may be noise.</td>
+</tr>
+<tr>
+<td>Ablation</td>
+<td>Remove one component and measure what changes, to show it mattered.</td>
+</tr>
+<tr>
+<td>Reproducibility</td>
+<td>Somebody else can rerun your code on the raw inputs and get your numbers.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="how-to-answer-any-project-question">How to answer any project question<a class="headerlink" href="#how-to-answer-any-project-question" title="Permanent link">#</a></h2>
 <ol>
-<li><strong>Start with the claim, not the method.</strong> "We tested whether X predicts Y."</li>
-<li><strong>Give the number.</strong> Effect size, metric, confidence interval if you have one.</li>
-<li><strong>Name the limitation before they do.</strong> It shows you understand it.</li>
-<li><strong>Point to the code.</strong> "This figure comes from <code>notebook X</code>, cell Y, seed 42."</li>
+<li><strong>Claim first.</strong> "We tested whether X predicts Y."</li>
+<li><strong>Number second.</strong> Effect size or metric, with an interval if you have one.</li>
+<li><strong>Limitation third.</strong> Name it before the examiner does.</li>
+<li><strong>Point to the code.</strong> "Figure 2 comes from notebook 3, cell 12, seed 42."</li>
 </ol>
 <div class="admonition warning">
-<p class="admonition-title">The three answers that lose points</p>
-<p>"The model is better" without a baseline. "We got 0.9 accuracy" when the classes are imbalanced. "We used a random train/test split" without mentioning patient overlap.</p>
+<p class="admonition-title">Three answers that lose points</p>
+<p>"The model is better" with no baseline. "We got 0.9 accuracy" on imbalanced classes. "Random split" without mentioning patient overlap.</p>
 </div>
-<h2 id="exam-questions">Exam questions<a class="headerlink" href="#exam-questions" title="Permanent link">#</a></h2>
-<h3 id="q1-what-is-your-research-question-and-which-result-answers-it">Q1 — What is your research question, and which result answers it?<a class="headerlink" href="#q1-what-is-your-research-question-and-which-result-answers-it" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> One sentence with a population, an input, an outcome. Then the exact figure or table on the poster that tests it. If the question changed during the project, say so and why.</p>
-<h3 id="q2-why-these-data-labels-and-splits-where-could-leakage-enter">Q2 — Why these data, labels and splits? Where could leakage enter?<a class="headerlink" href="#q2-why-these-data-labels-and-splits-where-could-leakage-enter" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> Say why the dataset fits the question, how labels were defined, and how the split was made. Name the leakage risk concretely: same patient in train and test, future data, duplicates, preprocessing fitted on the full set. Then say what you did about it.</p>
-<h3 id="q3-why-this-model-and-baseline-what-would-a-simpler-alternative-test">Q3 — Why this model and baseline? What would a simpler alternative test?<a class="headerlink" href="#q3-why-this-model-and-baseline-what-would-a-simpler-alternative-test" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> Justify the model by the data type and size. Name the baseline (majority class, logistic regression, no-change) and what a simpler model would isolate — e.g. whether the gain comes from the architecture or just from more parameters.</p>
-<h3 id="q4-which-preprocessing-training-and-hyperparameter-choices-matter-most">Q4 — Which preprocessing, training and hyperparameter choices matter most?<a class="headerlink" href="#q4-which-preprocessing-training-and-hyperparameter-choices-matter-most" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> Pick two or three decisions and say what changes if you flip them. Mention normalisation, class imbalance, augmentation, learning rate, early stopping and seed variance. "We tuned until it worked" is not an answer.</p>
-<h3 id="q5-what-does-each-metric-measure-and-what-do-your-numbers-establish">Q5 — What does each metric measure, and what do your numbers establish?<a class="headerlink" href="#q5-what-does-each-metric-measure-and-what-do-your-numbers-establish" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> Separate discrimination (AUROC) from calibration, and both from the operating point. Say what your number does <strong>not</strong> establish: one split, one site, no confidence intervals means no claim of significance or transportability. For imbalanced data report per-class recall and PPV at a stated prevalence.</p>
-<h3 id="q6-how-does-the-code-reproduce-each-poster-figure-and-table">Q6 — How does the code reproduce each poster figure and table?<a class="headerlink" href="#q6-how-does-the-code-reproduce-each-poster-figure-and-table" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> For each panel: input file, script or notebook, command, output. Mention the environment, random seeds and any manual step. If something is not reproducible, say it plainly — that is a limitation, not a disqualification.</p>
-<h3 id="q7-where-does-your-approach-fail-what-is-the-strongest-limitation-and-what-next">Q7 — Where does your approach fail, what is the strongest limitation, and what next?<a class="headerlink" href="#q7-where-does-your-approach-fail-what-is-the-strongest-limitation-and-what-next" title="Permanent link">#</a></h3>
-<p><strong>How to answer.</strong> Name the <strong>main</strong> failure mode (not a list of generic ones), the strongest limitation (data, labels, evaluation, compute), and the <strong>one</strong> next experiment that would be decisive. Be honest: a well-understood limitation scores better than a confident overclaim.</p>
+<h2 id="questions-to-rehearse-out-loud">Questions to rehearse out loud<a class="headerlink" href="#questions-to-rehearse-out-loud" title="Permanent link">#</a></h2>
+<h3 id="what-is-your-research-question-and-which-result-answers-it">What is your research question, and which result answers it?<a class="headerlink" href="#what-is-your-research-question-and-which-result-answers-it" title="Permanent link">#</a></h3>
+<p>Say the population, the input and the outcome in one sentence, then point to the exact panel that tests it. If the question changed during the project, say so and why.</p>
+<h3 id="why-these-data-labels-and-splits-where-could-leakage-enter">Why these data, labels and splits? Where could leakage enter?<a class="headerlink" href="#why-these-data-labels-and-splits-where-could-leakage-enter" title="Permanent link">#</a></h3>
+<p>Say why the dataset fits the question, how the label was defined, and how the split was made. Then name the concrete leakage risk: same patient on both sides, future data, duplicates, preprocessing fitted on the full set.</p>
+<h3 id="why-this-model-and-baseline-what-would-a-simpler-alternative-test">Why this model and baseline? What would a simpler alternative test?<a class="headerlink" href="#why-this-model-and-baseline-what-would-a-simpler-alternative-test" title="Permanent link">#</a></h3>
+<p>Justify the model by data type and size. Name the baseline and what a simpler model would isolate: is the gain from the architecture or just from more parameters?</p>
+<h3 id="which-preprocessing-and-training-choices-matter-most">Which preprocessing and training choices matter most?<a class="headerlink" href="#which-preprocessing-and-training-choices-matter-most" title="Permanent link">#</a></h3>
+<p>Pick two or three and say what changes if you flip them: normalisation, class imbalance, augmentation, learning rate, early stopping, seed variance. "We tuned until it worked" is not an answer.</p>
+<h3 id="what-does-each-metric-measure-and-what-do-your-numbers-establish">What does each metric measure, and what do your numbers establish?<a class="headerlink" href="#what-does-each-metric-measure-and-what-do-your-numbers-establish" title="Permanent link">#</a></h3>
+<p>Separate discrimination (AUROC) from calibration, and both from the operating point. Say what the number does <strong>not</strong> establish: one split, one site, no intervals means no claim of significance or transportability.</p>
+<h3 id="how-does-the-code-reproduce-each-figure-and-table">How does the code reproduce each figure and table?<a class="headerlink" href="#how-does-the-code-reproduce-each-figure-and-table" title="Permanent link">#</a></h3>
+<p>For each panel: input file, script or notebook, command, output. Mention the environment, seeds and any manual step. If something is not reproducible, say it — that is a limitation, not a disqualification.</p>
+<h3 id="where-does-your-approach-fail-and-what-would-you-test-next">Where does your approach fail, and what would you test next?<a class="headerlink" href="#where-does-your-approach-fail-and-what-would-you-test-next" title="Permanent link">#</a></h3>
+<p>Name the <strong>main</strong> failure mode, the strongest limitation (data, labels, evaluation, compute), and the <strong>one</strong> next experiment that would be decisive. An honest limitation scores better than a confident overclaim.</p>
 <div class="admonition tip">
 <p class="admonition-title">If you remember one thing</p>
-<p>Every claim on your poster should survive the question "compared to what, measured how, on whom?"</p>
+<p>Every poster claim should survive: "compared to what, measured how, on whom?"</p>
 </div>
 
 

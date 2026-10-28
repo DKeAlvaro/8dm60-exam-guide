@@ -623,10 +623,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-plain-words" class="md-nav__link">
+  <a href="#1-tools-turn-text-into-actions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        In plain words
+        1. Tools turn text into actions
       
     </span>
   </a>
@@ -634,10 +634,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-ideas-in-one-table" class="md-nav__link">
+  <a href="#2-react-reason-act-observe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core ideas in one table
+        2. ReAct: reason, act, observe
       
     </span>
   </a>
@@ -645,10 +645,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#3-workflow-or-agent-who-chooses-the-next-step" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        3. Workflow or agent: who chooses the next step?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-five-workflow-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The five workflow patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-acceptance-and-stopping-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Acceptance and stopping criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-evaluating-trajectories-not-just-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Evaluating trajectories, not just answers
       
     </span>
   </a>
@@ -717,10 +750,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-plain-words" class="md-nav__link">
+  <a href="#1-tools-turn-text-into-actions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        In plain words
+        1. Tools turn text into actions
       
     </span>
   </a>
@@ -728,10 +761,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-ideas-in-one-table" class="md-nav__link">
+  <a href="#2-react-reason-act-observe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core ideas in one table
+        2. ReAct: reason, act, observe
       
     </span>
   </a>
@@ -739,10 +772,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#3-workflow-or-agent-who-chooses-the-next-step" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        3. Workflow or agent: who chooses the next step?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-five-workflow-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The five workflow patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-acceptance-and-stopping-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Acceptance and stopping criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-evaluating-trajectories-not-just-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Evaluating trajectories, not just answers
       
     </span>
   </a>
@@ -770,107 +836,96 @@
 
 
 <h1 id="6-agentic-ai">6 · Agentic AI<a class="headerlink" href="#6-agentic-ai" title="Permanent link">#</a></h1>
-<div class="meta"><span class="hot">Lecture 6</span><span>~20 min</span><span>Tools and loops</span></div>
+<div class="meta"><span class="hot">Lecture 6</span><span>~20 min</span><span>Read → answer → check</span></div>
 
-<p class="lead">A plain language model only writes text. An agent is a language model inside a loop: it asks to use a tool, a program runs the tool, and the result comes back as text the model can reason about.</p>
+<p class="lead">A language model alone only writes text. An agent is a model inside a loop where it can use tools. This page defines the loop and the five patterns, then tests each.</p>
 
-<h2 id="in-plain-words">In plain words<a class="headerlink" href="#in-plain-words" title="Permanent link">#</a></h2>
+<h2 id="1-tools-turn-text-into-actions">1. Tools turn text into actions<a class="headerlink" href="#1-tools-turn-text-into-actions" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>tool</strong> is a function the model is allowed to call (search, database query, calculator). The model emits a structured <strong>tool request</strong>; the <strong>harness</strong> — the surrounding program, not the model — executes it and returns the result as an <strong>observation</strong>. The observation is tool output, never something the model predicted.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>A model produces perfectly formatted tool calls in every test. Is the tool integration complete? What must you test?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>No. Prompting a description only shows the model how to <strong>write</strong> a request; it does not prove execution, valid arguments, parsing of the result, or correct tool behaviour. Test end-to-end: real invocation, schema validation, error handling, and final answers against ground truth on representative cases.</p>
+</details>
+<h2 id="2-react-reason-act-observe">2. ReAct: reason, act, observe<a class="headerlink" href="#2-react-reason-act-observe" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> <strong>ReAct</strong> interleaves <strong>reasoning</strong> (text about what to do) and <strong>actions</strong> (tool calls), using each observation to decide the next step. <strong>Few-shot ReAct</strong> puts example trajectories in the prompt; the weights do not change.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>After the model requests a search, where does the observation come from, and why can search reduce hallucinations?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>From the <strong>search tool executed by the harness</strong>. Search supplies external evidence the model can use in later reasoning, instead of relying on memorised or invented facts; it does not update the weights.</p>
+</details>
+<h2 id="3-workflow-or-agent-who-chooses-the-next-step">3. Workflow or agent: who chooses the next step?<a class="headerlink" href="#3-workflow-or-agent-who-chooses-the-next-step" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>workflow</strong> is a system where the possible paths are written in code in advance. An <strong>agent</strong> is a system where the <strong>LLM decides</strong> the next step and which tools to use based on what it observed. Both keep the weights fixed. The deciding question is not "does it use an LLM" but "<strong>can I enumerate the paths in advance?</strong>"</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>A record-review pipeline has known exceptions: if quality fails, replace the image; if measurements are missing, send to a human. Workflow or agent?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p><strong>Workflow</strong>. Every path can be enumerated in advance, so explicit branches are easier to validate, monitor and audit. An agent adds non-determinism, cost, latency and validation burden with no benefit.</p>
+</details>
+<h2 id="4-the-five-workflow-patterns">4. The five workflow patterns<a class="headerlink" href="#4-the-five-workflow-patterns" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong></p>
 <ul>
-<li><strong>Tool use.</strong> The model writes a structured request; the surrounding program executes it; the result is returned to the model.</li>
-<li><strong>ReAct.</strong> Reason → act → observe → repeat, until a stopping condition.</li>
-<li><strong>Workflow versus agent.</strong> The difference is <strong>who decides the next step</strong>. A workflow has paths coded in advance; an agent lets the model choose based on what it observed.</li>
-<li><strong>Five workflow patterns.</strong> Prompt chaining, routing, parallelization, orchestrator–workers, evaluator–optimizer.</li>
-<li><strong>Evaluation.</strong> You judge the <strong>trajectory</strong> (which tools, which steps, was evidence cited) as well as the final answer, and you count cost.</li>
+<li><strong>Prompt chaining:</strong> fixed sequence of calls, each using the previous output.</li>
+<li><strong>Routing:</strong> classify the request, then send it to <strong>one</strong> specialist handler.</li>
+<li><strong>Parallelization:</strong> independent subtasks run at the same time, then an aggregator combines them.</li>
+<li><strong>Orchestrator–workers:</strong> an orchestrator decides <strong>at runtime</strong> which subtasks are needed, workers do them, a synthesizer combines.</li>
+<li><strong>Evaluator–optimizer:</strong> a generator drafts; an evaluator accepts or returns feedback for revision.</li>
 </ul>
-<h2 id="core-ideas-in-one-table">Core ideas in one table<a class="headerlink" href="#core-ideas-in-one-table" title="Permanent link">#</a></h2>
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th>Plain meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Tool request</td>
-<td>Model output naming a tool and arguments.</td>
-</tr>
-<tr>
-<td>Harness / environment</td>
-<td>The program that executes the tool and returns the observation.</td>
-</tr>
-<tr>
-<td>Observation</td>
-<td>The tool's returned result, <strong>not</strong> something the model imagined.</td>
-</tr>
-<tr>
-<td>ReAct</td>
-<td>Interleave reasoning and actions, using observations for the next step.</td>
-</tr>
-<tr>
-<td>Few-shot ReAct</td>
-<td>Example trajectories in the prompt; weights stay fixed.</td>
-</tr>
-<tr>
-<td>Prompt chaining</td>
-<td>Fixed sequence of LLM calls, each using the previous output.</td>
-</tr>
-<tr>
-<td>Routing</td>
-<td>Classify the request and send it to <strong>one</strong> specialist handler.</td>
-</tr>
-<tr>
-<td>Parallelization</td>
-<td>Independent subtasks run at once, then aggregate.</td>
-</tr>
-<tr>
-<td>Orchestrator–workers</td>
-<td>The orchestrator decides <strong>at runtime</strong> which subtasks are needed.</td>
-</tr>
-<tr>
-<td>Evaluator–optimizer</td>
-<td>A generator drafts; an evaluator accepts or returns feedback.</td>
-</tr>
-<tr>
-<td>Trajectory</td>
-<td>The full sequence of steps, tool calls and observations.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="exam-questions">Exam questions<a class="headerlink" href="#exam-questions" title="Permanent link">#</a></h2>
-<h3 id="q1-correctly-formatted-tool-requests-is-integration-complete">Q1 — Correctly formatted tool requests: is integration complete?<a class="headerlink" href="#q1-correctly-formatted-tool-requests-is-integration-complete" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> No. A description in the prompt only shows the model how to <strong>write</strong> a request; it does not prove the request is executed, that arguments are valid, that results are parsed and fed back, or that the tool works on real inputs. You need an <strong>end-to-end test</strong>: real invocation, schema validation, error handling, and final outputs checked against ground truth on representative cases.</p>
-<h3 id="q2-all-paths-and-exceptions-known-workflow-or-agent">Q2 — All paths and exceptions known: workflow or agent?<a class="headerlink" href="#q2-all-paths-and-exceptions-known-workflow-or-agent" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> A <strong>predefined workflow</strong>. The deciding question is whether the possible paths can be enumerated in advance, not whether the system branches or uses an LLM. An agent adds non-determinism, cost, latency and validation burden with no benefit when the logic is fixed; explicit branches and human-review steps are easier to validate, monitor and audit.</p>
-<h3 id="q3-parallelization-or-orchestratorworkers">Q3 — Parallelization or orchestrator–workers?<a class="headerlink" href="#q3-parallelization-or-orchestratorworkers" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Independent, pre-defined summaries → <strong>parallelization</strong> (all subtasks run, results aggregated). When which reviews are relevant depends on the case → <strong>orchestrator–workers</strong> (decomposition at runtime). The difference that matters is whether subtasks are fixed in advance or chosen during execution. Orchestration adds coordination cost: more calls and latency, error propagation, non-determinism, harder evaluation, and a synthesizer that must reconcile outputs.</p>
-<h3 id="q4-evaluatoroptimizer-acceptance-and-stopping-criteria">Q4 — Evaluator–optimizer acceptance and stopping criteria<a class="headerlink" href="#q4-evaluatoroptimizer-acceptance-and-stopping-criteria" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Use <strong>deterministic checks</strong> for facts: every requested finding present, values and units exact, chronology correct, no fabricated values. Use a <strong>judge</strong> for wording: clarity, coherence, no unsupported claims. Accept only when all deterministic checks pass <strong>and</strong> the judge is above threshold with no new unsupported claims. Use a revision limit as a fallback, but record "revision limit reached" as a <strong>failure</strong>, distinct from acceptance; log the reason and validate the evaluator itself against held-out human ratings.</p>
-<h3 id="q5-design-an-ai-sce-evaluation-of-workflow-versus-agent">Q5 — Design an AI-SCE evaluation of workflow versus agent<a class="headerlink" href="#q5-design-an-ai-sce-evaluation-of-workflow-versus-agent" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Include missing information, inconsistent records, ambiguous findings and routine controls. Record every tool call, step, token and second, and whether missing information was identified and inconsistencies resolved. Compare <strong>outcomes</strong> (correctness/completeness against ground truth), <strong>process</strong> (evidence attribution, unnecessary queries, appropriate escalation) and <strong>cost</strong>. To separate supported from accidentally correct answers, require each statement to cite its source record and inject known inconsistencies.</p>
-<h3 id="q6-where-does-the-observation-come-from">Q6 — Where does the observation come from?<a class="headerlink" href="#q6-where-does-the-observation-come-from" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> The <strong>tool executed by the surrounding program</strong> — the model only requests it. The tool description in the prompt is instructions, not an observation.</p>
-<h3 id="q7-what-defines-react">Q7 — What defines ReAct?<a class="headerlink" href="#q7-what-defines-react" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Interleaving reasoning and actions, using observations to inform the next step. Not a fixed plan, not a post-hoc explanation, not two separately trained models.</p>
-<h3 id="q8-how-do-few-shot-demonstrations-affect-react">Q8 — How do few-shot demonstrations affect ReAct?<a class="headerlink" href="#q8-how-do-few-shot-demonstrations-affect-react" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> They put example trajectories in the context (in-context learning); the weights stay fixed. They do not update parameters or train a controller.</p>
-<h3 id="q9-why-can-search-reduce-hallucinations">Q9 — Why can search reduce hallucinations?<a class="headerlink" href="#q9-why-can-search-reduce-hallucinations" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> It supplies <strong>evidence</strong> the model can use in later reasoning, instead of relying on memorised or invented facts. It does not update the weights during the session.</p>
-<h3 id="q10-workflows-versus-agents">Q10 — Workflows versus agents?<a class="headerlink" href="#q10-workflows-versus-agents" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Workflows use <strong>predefined code paths</strong>; agents let the <strong>LLM direct</strong> the process and tool use. Neither changes the weights.</p>
-<h3 id="q11-extract-draft-translate-which-pattern">Q11 — Extract → draft → translate: which pattern?<a class="headerlink" href="#q11-extract-draft-translate-which-pattern" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> <strong>Prompt chaining</strong>: sequential LLM calls, each consuming the previous output.</p>
-<h3 id="q12-classify-then-send-to-a-specialist-handler">Q12 — Classify then send to a specialist handler?<a class="headerlink" href="#q12-classify-then-send-to-a-specialist-handler" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> <strong>Routing</strong> — one path is selected. Parallelization would run several paths and aggregate; that is the classic trap.</p>
-<h3 id="q13-what-does-a-static-mcq-benchmark-miss">Q13 — What does a static MCQ benchmark miss?<a class="headerlink" href="#q13-what-does-a-static-mcq-benchmark-miss" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> <strong>Deciding what information to request</strong> as a consultation develops. Static questions test recall and single-step association, not interactive information gathering.</p>
-<h3 id="q14-role-of-agent-based-modelling">Q14 — Role of agent-based modelling?<a class="headerlink" href="#q14-role-of-agent-based-modelling" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> To <strong>simulate the actions and interactions of participants</strong> in a clinical environment, so a system can be tested against realistic behaviour before real deployment.</p>
-<h3 id="q15-after-good-simulated-performance">Q15 — After good simulated performance?<a class="headerlink" href="#q15-after-good-simulated-performance" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Test <strong>real-world impact in clinical studies</strong> and <strong>monitor after deployment</strong>. More simulation or more static questions do not address transfer.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Name the pattern for each: (a) extract findings → draft summary → translate; (b) classify a request and send it to a cardiology handler; (c) summarise three independent records at once; (d) decide per case which specialist reviews are needed.</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>(a) prompt chaining; (b) <strong>routing</strong> (not parallelization — only one path runs); (c) parallelization; (d) orchestrator–workers (subtasks chosen at runtime). The distinction between (c) and (d) is whether the decomposition is fixed before execution.</p>
+</details>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Why might orchestrator–workers be worth its extra cost, and what is that cost?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>It is worth it when which subtasks are needed depends on the case, so delegation must happen at runtime. The cost is coordination: more LLM calls and latency, error propagation, non-determinism, harder evaluation, and a synthesizer that must reconcile outputs.</p>
+</details>
+<h2 id="5-acceptance-and-stopping-criteria">5. Acceptance and stopping criteria<a class="headerlink" href="#5-acceptance-and-stopping-criteria" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> An agent needs a <strong>stop condition</strong>: success, a revision limit, or escalation to a human. <strong>Acceptance criteria</strong> define success. Deterministic checks (values, units, required findings) should be separate from judgement calls (clarity, emphasis). Reaching the revision limit is a <strong>failure</strong>, not an acceptance.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Design acceptance and stopping criteria for a summary that must preserve findings, values, units and chronology.</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Deterministic checks: every requested finding present, values and units exact, chronology correct, no fabricated values. Judgement: clarity, coherence, no unsupported claims. Accept only when all deterministic checks pass <strong>and</strong> the judge is above threshold; otherwise revise up to a fixed limit, and log "revision limit reached" as a failure. Validate the evaluator against human ratings to avoid self-preference.</p>
+</details>
+<h2 id="6-evaluating-trajectories-not-just-answers">6. Evaluating trajectories, not just answers<a class="headerlink" href="#6-evaluating-trajectories-not-just-answers" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>trajectory</strong> is the full sequence of reasoning steps, tool calls and observations. <strong>Outcome evaluation</strong> checks the final answer; <strong>process evaluation</strong> checks whether the right evidence was gathered and cited. <strong>AI-SCE</strong> (simulated clinical environment) places the system in a simulated encounter; <strong>agent-based modelling</strong> simulates the actions and interactions of participants.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>How would you distinguish a well-supported summary from one that is accidentally correct?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Require each statement to cite its source record, score supported-but-correct statements as failures if unsupported, inject known inconsistencies to see whether they are detected, and use blinded graders on paired cases. Accidental correctness disappears when the evidence chain is checked.</p>
+</details>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>An agent performs strongly in simulation. What evidence is needed before real care, and what does a static MCQ benchmark miss?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Real-world clinical studies and post-deployment monitoring — simulation cannot establish transfer. A static MCQ benchmark misses <strong>deciding what information to request</strong> as a consultation develops, because it tests recall and single-step association, not interactive information gathering.</p>
+</details>
 <div class="admonition tip">
 <p class="admonition-title">If you remember one thing</p>
-<p>Workflow or agent? Ask: <strong>can I list the paths in advance?</strong> Yes → workflow. No, the next step depends on what the tool returns → agent. Never answer "because it uses an LLM".</p>
+<p>Workflow or agent? Ask <strong>can I list the paths in advance?</strong> Yes → workflow. No → agent. Never answer "because it uses an LLM".</p>
 </div>
 
 

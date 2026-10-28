@@ -542,10 +542,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-plain-words" class="md-nav__link">
+  <a href="#1-what-scrna-seq-measures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        In plain words
+        1. What scRNA-seq measures
       
     </span>
   </a>
@@ -553,10 +553,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-ideas-in-one-table" class="md-nav__link">
+  <a href="#2-why-the-data-are-messy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core ideas in one table
+        2. Why the data are messy
       
     </span>
   </a>
@@ -564,10 +564,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#3-scvi-a-probabilistic-model-of-cells" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        3. scVI: a probabilistic model of cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-a-cell-is-a-set-not-a-sentence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. A cell is a set, not a sentence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-scgpt-a-foundation-model-for-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. scGPT: a foundation model for cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cpa-predicting-drug-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. CPA: predicting drug effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gears-using-biological-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. GEARS: using biological graphs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-evaluating-perturbations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Evaluating perturbations
       
     </span>
   </a>
@@ -717,10 +772,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-plain-words" class="md-nav__link">
+  <a href="#1-what-scrna-seq-measures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        In plain words
+        1. What scRNA-seq measures
       
     </span>
   </a>
@@ -728,10 +783,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#core-ideas-in-one-table" class="md-nav__link">
+  <a href="#2-why-the-data-are-messy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core ideas in one table
+        2. Why the data are messy
       
     </span>
   </a>
@@ -739,10 +794,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exam-questions" class="md-nav__link">
+  <a href="#3-scvi-a-probabilistic-model-of-cells" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exam questions
+        3. scVI: a probabilistic model of cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-a-cell-is-a-set-not-a-sentence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. A cell is a set, not a sentence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-scgpt-a-foundation-model-for-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. scGPT: a foundation model for cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cpa-predicting-drug-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. CPA: predicting drug effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gears-using-biological-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. GEARS: using biological graphs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-evaluating-perturbations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Evaluating perturbations
       
     </span>
   </a>
@@ -770,87 +880,103 @@
 
 
 <h1 id="3-omics-models">3 · Omics models<a class="headerlink" href="#3-omics-models" title="Permanent link">#</a></h1>
-<div class="meta"><span class="hot">Lecture 3</span><span>~20 min</span><span>Single cells</span></div>
+<div class="meta"><span class="hot">Lecture 3</span><span>~20 min</span><span>Read → answer → check</span></div>
 
-<p class="lead">Single-cell RNA sequencing counts, for each cell, how many mRNA molecules of each gene it contains. The table is huge, sparse and noisy, so the job is to turn it into a useful vector and to predict what a drug or a gene knockout will do.</p>
+<p class="lead">Single-cell data count molecules inside individual cells. This page defines what those numbers are, why they are messy, and how four model families handle them.</p>
 
-<h2 id="in-plain-words">In plain words<a class="headerlink" href="#in-plain-words" title="Permanent link">#</a></h2>
-<ul>
-<li><strong>The data.</strong> Rows are cells, columns are ~20,000 genes, values are counts. Most values are zero.</li>
-<li><strong>Why it is noisy.</strong> Some zeros are real (the gene is off), some are technical (the molecule was missed). Cells are also sequenced to different depths, and batches differ by machine, day or lab.</li>
-<li><strong>scVI.</strong> A probabilistic model (VAE) that compresses a cell into a low-dimensional vector while explicitly modelling zeros, library size and batch.</li>
-<li><strong>scGPT.</strong> A Transformer over genes, learning from millions of cells. It gives general-purpose cell embeddings, but does not necessarily beat a model fitted to your dataset.</li>
-<li><strong>Perturbations (CPA, GEARS).</strong> Predict how gene expression changes after a drug or a knockout, including combinations never observed.</li>
-</ul>
-<h2 id="core-ideas-in-one-table">Core ideas in one table<a class="headerlink" href="#core-ideas-in-one-table" title="Permanent link">#</a></h2>
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th>Plain meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>scRNA-seq</td>
-<td>Counts of mRNA per gene per cell.</td>
-</tr>
-<tr>
-<td>Sparsity / excess zeros</td>
-<td>Most counts are zero, partly technical.</td>
-</tr>
-<tr>
-<td>Library size</td>
-<td>Total counts per cell; varies with sequencing depth.</td>
-</tr>
-<tr>
-<td>Batch effect</td>
-<td>Technical differences between experimental batches.</td>
-</tr>
-<tr>
-<td>ZINB</td>
-<td>Zero-inflated negative binomial: a gate for extra zeros plus a count distribution.</td>
-</tr>
-<tr>
-<td>VAE / latent <span class="arithmatex">\(z\)</span></td>
-<td>Compress each cell to a few numbers, then reconstruct its counts.</td>
-</tr>
-<tr>
-<td>Zero-shot</td>
-<td>Use a pretrained model on new data without fitting it.</td>
-</tr>
-<tr>
-<td>Perturbation</td>
-<td>A drug, a knockout, or a combination applied to cells.</td>
-</tr>
-<tr>
-<td>No-Change baseline</td>
-<td>Predict that expression stays the same; a suspiciously strong baseline.</td>
-</tr>
-<tr>
-<td>Masked gene prediction</td>
-<td>Hide a gene's value and predict it from the others — scGPT's training task.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="exam-questions">Exam questions<a class="headerlink" href="#exam-questions" title="Permanent link">#</a></h2>
-<h3 id="q1-how-does-scvi-handle-the-five-challenges">Q1 — How does scVI handle the five challenges?<a class="headerlink" href="#q1-how-does-scvi-handle-the-five-challenges" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> (1) <strong>Sparsity/excess zeros:</strong> a zero-inflated negative binomial likelihood — a dropout gate for extra zeros plus a negative binomial for counts. (2) <strong>Varying library size:</strong> the observed total count enters the mean as an explicit scaling factor. (3) <strong>Batch effects:</strong> batch is a covariate fed to the encoder and decoder, so the latent <span class="arithmatex">\(z\)</span> is pushed to capture biology. (4) <strong>Biological noise:</strong> a probabilistic latent variable sampled from a prior, with dispersion, instead of a single point estimate. (5) <strong>Scalability:</strong> amortised inference with an encoder network and mini-batch gradient descent, rather than optimising parameters per cell.</p>
-<h3 id="q2-why-is-a-cell-not-a-sentence-of-genes">Q2 — Why is a cell not a sentence of genes?<a class="headerlink" href="#q2-why-is-a-cell-not-a-sentence-of-genes" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Gene order is arbitrary and the number of expressed genes varies per cell, so positional information is meaningless and the "sentence" length is not fixed. A cell is a <strong>set of genes with expression values</strong>, and using gene identity alone throws away the magnitudes and the zeros. Two fixes: embed <strong>gene identity plus expression value</strong> (normalised), and make the architecture <strong>order-invariant</strong> (no positional embeddings, attention over a set).</p>
-<h3 id="q3-tp53-with-the-same-expression-in-two-cells">Q3 — TP53 with the same expression in two cells?<a class="headerlink" href="#q3-tp53-with-the-same-expression-in-two-cells" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> The <strong>initial</strong> embeddings are identical: same gene identity and same expression value. The <strong>post-Transformer</strong> embeddings differ, because self-attention mixes TP53 with the other genes expressed in that cell. That is the point: a gene's representation becomes <strong>context-dependent</strong>, capturing gene–gene interactions and cell state.</p>
-<h3 id="q4-frozen-scgpt-versus-dataset-fitted-scvi">Q4 — Frozen scGPT versus dataset-fitted scVI?<a class="headerlink" href="#q4-frozen-scgpt-versus-dataset-fitted-scvi" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Expect the <strong>dataset-fitted scVI</strong> to integrate batches better and often preserve biology better; a zero-shot foundation model was not trained on this dataset and tends to carry its batch structure. The exception is <strong>batch–biology confounding</strong> (e.g. cancer and normal in different batches): aggressive batch removal can delete the signal you want, so a model that removes less may preserve more biology — at the cost of leaving batch in. Decide by measuring biological conservation (cell-type separation, marker recovery), not by assuming integration always helps.</p>
-<h3 id="q5-can-cpa-predict-a-completely-unseen-drug">Q5 — Can CPA predict a completely unseen drug?<a class="headerlink" href="#q5-can-cpa-predict-a-completely-unseen-drug" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Not with standard CPA: each perturbation is a <strong>learned embedding</strong>, so a drug absent from training has no embedding. Generalisation needs a perturbation representation that transfers — chemical structure/fingerprint features, or training on mechanism classes. If the <strong>adversarial weight is zero</strong>, the basal state is no longer forced to be perturbation-invariant, so it can absorb drug information; the clean split between "cell state" and "drug effect" breaks and counterfactual predictions for unseen combinations become unreliable.</p>
-<h3 id="q6-why-does-gears-need-the-perturbation-graph-g_textpert">Q6 — Why does GEARS need the perturbation graph <span class="arithmatex">\(G_\text{pert}\)</span>?<a class="headerlink" href="#q6-why-does-gears-need-the-perturbation-graph-g_textpert" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> <span class="arithmatex">\(G_\text{gene}\)</span> encodes which genes are co-expressed; <span class="arithmatex">\(G_\text{pert}\)</span> encodes which perturbations have <strong>similar downstream effects</strong>. GEARS propagates information over <span class="arithmatex">\(G_\text{pert}\)</span> so the effect of an unobserved knockout can be borrowed from perturbations with similar effects. Using only <span class="arithmatex">\(G_\text{gene}\)</span> relates perturbations through co-expression, which is a different relationship, so a never-perturbed gene cannot borrow strength and its predicted knockout collapses to something arbitrary or average.</p>
-<h3 id="q7-mse-005-vs-no-change-006-with-5010000-genes-changing">Q7 — MSE 0.05 vs No-Change 0.06 with 50/10,000 genes changing?<a class="headerlink" href="#q7-mse-005-vs-no-change-006-with-5010000-genes-changing" title="Permanent link">#</a></h3>
-<p><strong>Answer.</strong> Predicting "no change" is already correct for ~99.5% of entries, so global MSE is dominated by unchanged genes and hides whether the model learned the treatment effect. Evaluate on <strong>differentially expressed genes</strong> (top-k by effect size), use per-gene standardised errors or delta/correlation between predicted and observed effects, and report MSE on changed genes separately. The 0.05 versus 0.06 gap may be clinically meaningless.</p>
+<h2 id="1-what-scrna-seq-measures">1. What scRNA-seq measures<a class="headerlink" href="#1-what-scrna-seq-measures" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>gene</strong> is a stretch of DNA; <strong>mRNA</strong> (messenger RNA) is the copy a cell makes when the gene is active, and it is what single-cell RNA sequencing counts. <strong>scRNA-seq</strong> measures, for each cell, how many mRNA molecules of each gene it contains. The result is a <strong>count matrix</strong>: rows are cells, columns are genes (~20,000), values are counts. A <strong>cell type</strong> is a group of cells with a similar expression pattern.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>A count of 4 for gene TP53 in a cell — what does that number mean, and what does 0 mean?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>4 mRNA molecules of TP53 were captured in that cell. 0 means none were captured — which may mean the gene was off, or that the molecule was missed by the assay (see next section).</p>
+</details>
+<h2 id="2-why-the-data-are-messy">2. Why the data are messy<a class="headerlink" href="#2-why-the-data-are-messy" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> Most entries are zero. Some zeros are biological (gene inactive), some are technical (<strong>dropout</strong>: the molecule existed but was not captured). <strong>Library size</strong> is the total counts per cell and varies with sequencing depth, so raw counts are not comparable across cells. A <strong>batch effect</strong> is a technical difference between groups of cells processed on different days, machines or labs.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Cell A has library size 2,000 and cell B 10,000. Cell A shows 10 counts of a gene, B shows 30. Which cell expresses it more, and why is the raw count misleading?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Cell A: 10/2,000 = 0.5% of its mRNA; B: 30/10,000 = 0.3%. A expresses it more, but raw counts suggest the opposite because B was sequenced deeper. You must normalise by library size (or model it).</p>
+</details>
+<h2 id="3-scvi-a-probabilistic-model-of-cells">3. scVI: a probabilistic model of cells<a class="headerlink" href="#3-scvi-a-probabilistic-model-of-cells" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> <strong>scVI</strong> is a <strong>variational autoencoder (VAE)</strong>: an encoder compresses each cell's counts into a few numbers <span class="arithmatex">\(z\)</span> (the <strong>latent representation</strong>), and a decoder reconstructs the counts from <span class="arithmatex">\(z\)</span>. Because it is probabilistic, each cell maps to a distribution, not a point. It uses a <strong>zero-inflated negative binomial (ZINB)</strong> likelihood: a <strong>negative binomial</strong> models counts with overdispersion, and a <strong>zero-inflation gate</strong> models the excess technical zeros. Library size enters as a scaling factor; <strong>batch</strong> is a covariate given to encoder and decoder.</p>
+<p><strong>Term.</strong> <em>Amortised inference</em>: one neural network computes the per-cell parameters, instead of optimising them separately for every cell.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Map the five problems — excess zeros, varying depth, batch effects, biological noise, scalability — to the scVI components that handle each.</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>(1) ZINB dropout gate → excess zeros. (2) Observed library size as an explicit scaling factor in the mean → depth. (3) Batch as a covariate in encoder and decoder → batch effects. (4) A sampled latent variable with a prior plus dispersion → biological noise. (5) Amortised inference with an encoder and mini-batch gradient descent → scalability.</p>
+</details>
+<h2 id="4-a-cell-is-a-set-not-a-sentence">4. A cell is a set, not a sentence<a class="headerlink" href="#4-a-cell-is-a-set-not-a-sentence" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> In language, word order carries meaning. In a cell, gene order is arbitrary and the number of expressed genes varies, so <strong>positional embeddings are meaningless</strong> and the "sequence" length is not fixed. Also, gene identity alone is not enough: you need the <strong>expression value</strong>.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Why is treating a cell as a sentence of gene names wrong, and what two changes make a Transformer suitable?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Gene order is arbitrary and the set size varies per cell, so positional information is meaningless; gene identity alone also discards expression magnitude and zeros. Fix: embed gene identity <strong>plus</strong> its (normalised) expression value, and make the architecture order-invariant by removing positional embeddings (attention over a set).</p>
+</details>
+<h2 id="5-scgpt-a-foundation-model-for-cells">5. scGPT: a foundation model for cells<a class="headerlink" href="#5-scgpt-a-foundation-model-for-cells" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>foundation model</strong> is pretrained on a very large corpus and reused for many tasks. <strong>scGPT</strong> is a Transformer trained on millions of cells, mostly by <strong>masked gene prediction</strong>: hide a gene's value and predict it from the others. It yields general <strong>cell embeddings</strong> and can be used <strong>zero-shot</strong> (without fitting on your dataset).</p>
+<p><strong>Context matters.</strong> A gene's first embedding depends only on its identity and value; after attention it depends on the other genes in that cell.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>TP53 has the same expression value in a stressed cancer cell and a resting cell. Are its initial and final embeddings the same?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Initial: identical (same identity and value). Final: different, because self-attention mixes TP53 with the other genes expressed in each cell, capturing cell state and gene–gene interactions.</p>
+</details>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Frozen scGPT embeddings versus scVI fitted on your new dataset: which integrates batches better, and when could the answer flip?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Usually <strong>scVI</strong>: it is fitted to this dataset, while zero-shot scGPT was not trained on it and tends to retain its batch structure. It flips when batch is <strong>confounded with biology</strong> (e.g. cancer and normal in different batches): aggressive batch removal deletes the biological signal, so a model that removes less can preserve more biology — at the cost of leaving batch in. Decide by measuring biological conservation, not by assumption.</p>
+</details>
+<h2 id="6-cpa-predicting-drug-effects">6. CPA: predicting drug effects<a class="headerlink" href="#6-cpa-predicting-drug-effects" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> A <strong>perturbation</strong> is an intervention on cells: a drug, a gene <strong>knockout</strong> (gene disabled), or a combination. <strong>CPA</strong> (compositional perturbation autoencoder) splits a cell into a <strong>basal state</strong> (the cell without treatment) and a <strong>perturbation effect</strong>, and uses an <strong>adversarial discriminator</strong> to force the basal state to contain no perturbation information. Each perturbation is represented by a <strong>learned embedding</strong>. <strong>Counterfactual</strong> = prediction for a condition not observed.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Can CPA predict a drug never seen in training? What happens if the adversarial weight is set to zero?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>No: a learned embedding for each drug means an unseen drug has no embedding, so it cannot be represented; generalisation needs features that transfer (chemical structure/fingerprint) or mechanism classes. With adversarial weight zero, the basal state is no longer forced to be perturbation-invariant, so it absorbs drug information, the clean decomposition breaks, and counterfactual predictions for unseen combinations become unreliable.</p>
+</details>
+<h2 id="7-gears-using-biological-graphs">7. GEARS: using biological graphs<a class="headerlink" href="#7-gears-using-biological-graphs" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> <strong>GEARS</strong> uses two <strong>graphs</strong> (networks of nodes and edges). <span class="arithmatex">\(G_\text{gene}\)</span> links genes that are <strong>co-expressed</strong> (expressed together). <span class="arithmatex">\(G_\text{pert}\)</span> links perturbations with <strong>similar downstream effects</strong>. Information is passed along the edges so an unseen knockout can borrow strength from similar perturbations.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>Why can GEARS predict the effect of a gene that was never knocked out, and why is <span class="arithmatex">\(G_\text{gene}\)</span> not enough?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Its embedding is inferred by propagating over <span class="arithmatex">\(G_\text{pert}\)</span> from perturbations with similar effects. <span class="arithmatex">\(G_\text{gene}\)</span> describes co-expression, which is a different relationship: using it for perturbation message passing cannot borrow from biologically similar perturbations, so the prediction collapses to an average or arbitrary value.</p>
+</details>
+<h2 id="8-evaluating-perturbations">8. Evaluating perturbations<a class="headerlink" href="#8-evaluating-perturbations" title="Permanent link">#</a></h2>
+<p><strong>Explanation.</strong> <strong>MSE</strong> (mean squared error) averages over all genes. If only 50 of 10,000 genes respond, predicting "no change" is right almost everywhere. <strong>Differentially expressed (DE) genes</strong> are those whose expression changes significantly under treatment. The <strong>No-Change baseline</strong> predicts that expression stays the same — a baseline any real model must beat where it matters.</p>
+<div class="admonition question">
+<p class="admonition-title">Check yourself</p>
+<p>A model gets MSE 0.05 and No-Change gets 0.06, with 50/10,000 genes changing. Is the model good, and what should you report instead?</p>
+</div>
+<details class="success">
+<summary>Answer</summary>
+<p>Not necessarily. Predicting no change is already correct for ~99.5% of entries, so global MSE is dominated by unchanged genes and hides whether treatment effects were learned. Report metrics on <strong>DE genes</strong> only: per-gene standardised error, correlation between predicted and observed effect sizes, delta metrics, and MSE on changed genes separately.</p>
+</details>
 <div class="admonition tip">
 <p class="admonition-title">If you remember one thing</p>
-<p>In omics, always ask <strong>what is held out</strong>: a cell, a batch, a perturbation, or a drug never seen. That word decides whether the claim is generalisation or memorisation.</p>
+<p>Always ask <strong>what is held out</strong> — a cell, a batch, a perturbation, or a drug never seen. That word decides whether the claim is generalisation or memorisation.</p>
 </div>
 
 
