@@ -1,6 +1,6 @@
 site_name: 8DM60 · Exam skeleton
 site_description: A sparse, question-driven exam guide for 8DM60 Multimodal AI in Biomedicine. Content is added only when you ask Claude Code.
-site_url: https://8dm60.5.175.211.104.sslip.io/
+site_url: https://dkealvaro.github.io/8dm60-exam-guide/
 use_directory_urls: false
 repo_url: https://github.com/DKeAlvaro/8dm60-exam-guide
 repo_name: 8dm60-exam-guide
@@ -42,6 +42,9 @@ plugins:
 
 nav:
   - Start here: index.md
+  - Multiple choice · answer key: mc-answer-key.md
+  - Past exercises · worked answers: past-exercises.md
+  - Clinical workflow cases: workflow-cases.md
   - 1 · Language models: language.md
   - 2 · Vision models: vision.md
   - 3 · Omics models: omics.md

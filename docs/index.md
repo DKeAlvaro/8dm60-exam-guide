@@ -4,6 +4,12 @@
 
 <p class="lead">Topics, possible questions, and the milestones to reach. Nothing is explained until you ask for it.</p>
 
+## Cram now
+
+1. [Multiple choice · answer key](mc-answer-key.md) — 20% of the grade, 20 questions, every trap marked.
+2. [Past exercises · worked answers](past-exercises.md) — every BZ problem from lectures 1–4 and 6 with a model answer.
+3. [Clinical workflow cases](workflow-cases.md) — the eight deployment cases with numbers and risk owners.
+
 ## Pass conditions
 
 | Component | Weight |
