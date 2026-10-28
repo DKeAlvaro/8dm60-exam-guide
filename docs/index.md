@@ -6,7 +6,8 @@
 
 ## Cram now
 
-1. [Multiple choice · answer key](mc-answer-key.md) — 20% of the grade, 20 questions, every trap marked.
+0. [Cram sheet · 30 minutes](cram.md) — the short one. Read this first.
+1. [Multiple choice · answer key](mc-answer-key.md) — 20% of the grade, every trap marked.
 2. [Past exercises · worked answers](past-exercises.md) — every BZ problem from lectures 1–4 and 6 with a model answer.
 3. [Clinical workflow cases](workflow-cases.md) — the eight deployment cases with numbers and risk owners.
 

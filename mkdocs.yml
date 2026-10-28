@@ -42,6 +42,7 @@ plugins:
 
 nav:
   - Start here: index.md
+  - Cram sheet · 30 min: cram.md
   - Multiple choice · answer key: mc-answer-key.md
   - Past exercises · worked answers: past-exercises.md
   - Clinical workflow cases: workflow-cases.md
