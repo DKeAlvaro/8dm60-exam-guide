@@ -4,6 +4,28 @@
 
 <p class="lead">Hospital records are messy measurements over time. This page defines the data, the metrics, and the four ways a model can look better than it is.</p>
 
+## 0. The nine questions for any prediction paper
+
+The lecture's framework for interrogating a clinical prediction model — use it to structure an open answer:
+
+| | Question | What it asks |
+| --- | --- | --- |
+| Q1 | Task | What is the clinical prediction task? |
+| Q2 | Data | What patient data are available to the model? |
+| Q3 | Representation | How is the patient represented? |
+| Q4 | Captured / lost | What does the representation capture, and lose? |
+| Q5 | Architecture | How does the architecture reflect the data structure? |
+| Q6 | Training | How is it trained, and is that appropriate? |
+| Q7 | Evaluation | How is performance measured, on whom, with which metrics? |
+| Q8 | Bias and failure | Where are the sources of bias, uncertainty and failure? |
+| Q9 | Generalization | Is there evidence it works beyond the training data? |
+
+!!! question "Check yourself"
+    A paper predicts 30-day readmission from a random split of one hospital's EHR. Which of the nine questions does it answer well, and which one does it fail?
+
+??? success "Answer"
+    It can answer Q1–Q7 for that hospital. Q8 needs the bias analysis (selection, treatment, missingness, leakage). Q9 fails: a random split of the same source is internal validation only — no external cohort, no prospective cases, so transportability is unsupported.
+
 ## 1. What hospital data are
 
 **Explanation.** An **EHR** (electronic health record) stores, per patient: **demographics**, **vitals** (heart rate, blood pressure — measured repeatedly), **labs** (blood tests, e.g. lactate), **notes** (free text written by clinicians), medications, procedures and images. A **patient representation** is the vector a model uses: **static** (one row per patient), **longitudinal** (a sequence over time) or **multimodal** (text + numbers + images combined).

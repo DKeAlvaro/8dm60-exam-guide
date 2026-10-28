@@ -30,7 +30,7 @@
 
 ## 3. Self-attention mixes tokens
 
-**Explanation.** Each token creates three vectors: a **query** $q$ ("what am I looking for?"), a **key** $k$ ("what do I contain?") and a **value** $v$ ("what do I pass on?"). The model compares each query with all keys (dot product), turns the scores into weights with **softmax** (a function that makes a list of scores sum to 1), and uses the weights to average the values. That average is the token's new, context-aware representation.
+**Explanation.** Each token creates three vectors: a **query** $q$ ("what am I looking for?"), a **key** $k$ ("what do I contain?") and a **value** $v$ ("what do I pass on?"). The model compares each query with all keys (dot product), turns the scores into weights with **softmax** (a function that makes a list of scores sum to 1), and uses the weights to average the values. That average is the token's new, context-aware representation. Written as a matrix: $\mathrm{softmax}(QK^\top/\sqrt{d_k})V$, where $\sqrt{d_k}$ keeps the scores from growing too large. **Multi-head attention** runs several of these in parallel so different heads can track different relationships.
 
 **Self vs cross.** In **self-attention**, Q, K and V all come from the same sequence. In **cross-attention**, Q comes from one sequence (e.g. the decoder) and K/V from another (e.g. the encoder).
 

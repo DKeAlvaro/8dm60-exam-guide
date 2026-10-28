@@ -38,7 +38,7 @@
 
 ## 4. Collapse: when all images look the same
 
-**Explanation.** A trivial way to make two views similar is to output the same vector for every image — **representation collapse**. DINO avoids it with centring and sharpening; DINOv2 adds a **feature-spread regulariser** that pushes features apart (prevents **dimensional collapse**, where features crowd into a narrow subspace).
+**Explanation.** A trivial way to make two views similar is to output the same vector for every image — **representation collapse**. DINO avoids it with **centring** (subtract the batch mean from the teacher's outputs, so no single dimension dominates) and **sharpening** (divide the logits by a small temperature, making the target distribution confident); DINOv2 adds a **feature-spread regulariser** that pushes features apart (prevents **dimensional collapse**, where features crowd into a narrow subspace).
 
 !!! question "Check yourself"
     Remove the spread regulariser. What goes wrong, and which measurements would reveal it?

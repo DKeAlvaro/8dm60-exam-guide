@@ -36,6 +36,14 @@
 ??? success "Answer"
     (1) ZINB dropout gate → excess zeros. (2) Observed library size as an explicit scaling factor in the mean → depth. (3) Batch as a covariate in encoder and decoder → batch effects. (4) A sampled latent variable with a prior plus dispersion → biological noise. (5) Amortised inference with an encoder and mini-batch gradient descent → scalability.
 
+**What it optimises.** scVI maximises the **ELBO** (evidence lower bound), which has two terms: a **reconstruction term** (how likely are the observed counts under the predicted ZINB?) and a **KL term** (keep the inferred latent variables close to a prior, so the latent space stays smooth and well-behaved). The encoder outputs two latent variables per cell: $z_n$ (low-dimensional biological state) and $l_n$ (library size/depth).
+
+!!! question "Check yourself"
+    In one sentence each, what do the reconstruction term and the KL term push the model to do?
+
+??? success "Answer"
+    Reconstruction pushes the decoder to explain the observed counts well; KL pushes the encoder's distributions toward the prior, regularising the latent space so cells with similar biology land close together instead of memorising noise.
+
 ## 4. A cell is a set, not a sentence
 
 **Explanation.** In language, word order carries meaning. In a cell, gene order is arbitrary and the number of expressed genes varies, so **positional embeddings are meaningless** and the "sequence" length is not fixed. Also, gene identity alone is not enough: you need the **expression value**.
@@ -84,7 +92,17 @@
 ??? success "Answer"
     Its embedding is inferred by propagating over $G_\text{pert}$ from perturbations with similar effects. $G_\text{gene}$ describes co-expression, which is a different relationship: using it for perturbation message passing cannot borrow from biologically similar perturbations, so the prediction collapses to an average or arbitrary value.
 
-## 8. Evaluating perturbations
+## 8. Measuring a good cell embedding
+
+**Explanation.** An embedding is good if it scores well on **both** goals: **biological conservation** (cell types stay separable: clustering, neighbourhood purity, known structure preserved) and **batch integration** (batches mix within cell types, and batch is no longer predictable from the embedding). The **AvgBIO** score summarises biological conservation and the **batch score** summarises integration. Benchmarks show foundation models capture biology but are **not consistently better** than HVG, Harmony or scVI zero-shot, and batch effects remain.
+
+!!! question "Check yourself"
+    An embedding has perfect cell-type clustering but every cluster splits by sequencing batch, and a classifier can predict the batch perfectly. Which score is bad, and what is the risk of fixing it aggressively?
+
+??? success "Answer"
+    The **batch score** is bad: batch is still predictable. Fixing it aggressively risks removing biology when batch is confounded with cell type (e.g. cancer and normal processed separately) — evaluate biological conservation before and after integration, not just batch mixing.
+
+## 9. Evaluating perturbations
 
 **Explanation.** **MSE** (mean squared error) averages over all genes. If only 50 of 10,000 genes respond, predicting "no change" is right almost everywhere. **Differentially expressed (DE) genes** are those whose expression changes significantly under treatment. The **No-Change baseline** predicts that expression stays the same — a baseline any real model must beat where it matters.
 
