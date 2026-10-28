@@ -1,49 +1,48 @@
 # Your project · 15%
 
-## Subtitles
+<div class="meta"><span class="hot">Poster + code</span><span>15% of the grade</span><span>Be specific</span></div>
 
-1. Research question and claim
-2. Data, labels, and splits
-3. Baseline and model
-4. Preprocessing and training
-5. Metrics and results
-6. Code and reproducibility
-7. Failures, limitations, and next step
+<p class="lead">These questions are about <em>your</em> poster and code, so nobody can answer them for you. What follows is the shape of a good answer: one claim, one number, one limitation.</p>
 
-## Milestones
+## How to answer any project question
 
-- [ ] Reproduce the poster pipeline without looking at the code.
-- [ ] Defend every design choice against one alternative.
-- [ ] Explain every result, metric, and baseline on the poster.
-- [ ] Locate the code behind each poster claim.
-- [ ] State the main failure mode and next decisive experiment.
+1. **Start with the claim, not the method.** "We tested whether X predicts Y."
+2. **Give the number.** Effect size, metric, confidence interval if you have one.
+3. **Name the limitation before they do.** It shows you understand it.
+4. **Point to the code.** "This figure comes from `notebook X`, cell Y, seed 42."
 
-## Possible exam questions
+!!! warning "The three answers that lose points"
+    "The model is better" without a baseline. "We got 0.9 accuracy" when the classes are imbalanced. "We used a random train/test split" without mentioning patient overlap.
 
-### PROJECT · Q1 — What exactly is your research question, and which result answers it? {#lpq1 data-source="Your project poster and code"}
+## Exam questions
 
-<div class="response" markdown></div>
+### Q1 — What is your research question, and which result answers it?
 
-### PROJECT · Q2 — Why did you choose these data, labels, and splits? Where could leakage enter? {#lpq2 data-source="Your project poster and code"}
+**How to answer.** One sentence with a population, an input, an outcome. Then the exact figure or table on the poster that tests it. If the question changed during the project, say so and why.
 
-<div class="response" markdown></div>
+### Q2 — Why these data, labels and splits? Where could leakage enter?
 
-### PROJECT · Q3 — Why this model and baseline? What would a simpler alternative test? {#lpq3 data-source="Your project poster and code"}
+**How to answer.** Say why the dataset fits the question, how labels were defined, and how the split was made. Name the leakage risk concretely: same patient in train and test, future data, duplicates, preprocessing fitted on the full set. Then say what you did about it.
 
-<div class="response" markdown></div>
+### Q3 — Why this model and baseline? What would a simpler alternative test?
 
-### PROJECT · Q4 — Which preprocessing, training, and hyperparameter choices most affect the result? {#lpq4 data-source="Your project poster and code"}
+**How to answer.** Justify the model by the data type and size. Name the baseline (majority class, logistic regression, no-change) and what a simpler model would isolate — e.g. whether the gain comes from the architecture or just from more parameters.
 
-<div class="response" markdown></div>
+### Q4 — Which preprocessing, training and hyperparameter choices matter most?
 
-### PROJECT · Q5 — What does each reported metric measure, and what do your numbers actually establish? {#lpq5 data-source="Your project poster and code"}
+**How to answer.** Pick two or three decisions and say what changes if you flip them. Mention normalisation, class imbalance, augmentation, learning rate, early stopping and seed variance. "We tuned until it worked" is not an answer.
 
-<div class="response" markdown></div>
+### Q5 — What does each metric measure, and what do your numbers establish?
 
-### PROJECT · Q6 — How does the code reproduce each poster figure and table from the raw inputs? {#lpq6 data-source="Your project poster and code"}
+**How to answer.** Separate discrimination (AUROC) from calibration, and both from the operating point. Say what your number does **not** establish: one split, one site, no confidence intervals means no claim of significance or transportability. For imbalanced data report per-class recall and PPV at a stated prevalence.
 
-<div class="response" markdown></div>
+### Q6 — How does the code reproduce each poster figure and table?
 
-### PROJECT · Q7 — Where does your approach fail, what is its strongest limitation, and what would you test next? {#lpq7 data-source="Your project poster and code"}
+**How to answer.** For each panel: input file, script or notebook, command, output. Mention the environment, random seeds and any manual step. If something is not reproducible, say it plainly — that is a limitation, not a disqualification.
 
-<div class="response" markdown></div>
+### Q7 — Where does your approach fail, what is the strongest limitation, and what next?
+
+**How to answer.** Name the **main** failure mode (not a list of generic ones), the strongest limitation (data, labels, evaluation, compute), and the **one** next experiment that would be decisive. Be honest: a well-understood limitation scores better than a confident overclaim.
+
+!!! tip "If you remember one thing"
+    Every claim on your poster should survive the question "compared to what, measured how, on whom?"

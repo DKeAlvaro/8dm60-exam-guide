@@ -1,49 +1,67 @@
 # 4 · Models for hospital data
 
-## Subtitles
+<div class="meta"><span class="hot">Lecture 4</span><span>~15 min</span><span>EHR and metrics</span></div>
 
-1. Static, longitudinal, and multimodal patient representations
-2. Information loss in EHR representations
-3. Prevalence, discrimination, and precision
-4. Labels, treatment, and selection bias
-5. Temporal leakage and live-use evaluation
-6. Calibration and expected outcomes
-7. Dataset shift, missingness, and fairness
+<p class="lead">Hospital data are messy records over time: vitals, labs, notes, images. Turning them into one vector per patient is convenient and lossy, and the metrics that look good on a balanced test set can be misleading in a real ward.</p>
 
-## Milestones
+## In plain words
 
-- [ ] Find what an aggregation or representation throws away.
-- [ ] Move sensitivity, specificity, and precision across prevalence.
-- [ ] Diagnose treatment, label, missingness, and leakage bias.
-- [ ] Separate AUROC, calibration, and observed/expected ratios.
-- [ ] Design patient-level, temporal, external, and subgroup tests.
+- **Patient representation.** Static (one row per patient), longitudinal (a sequence over time), or multimodal (text + numbers + images combined).
+- **Aggregation loses time.** The mean of a vital sign cannot tell a patient who is recovering from one who is deteriorating.
+- **Prevalence matters.** Sensitivity and specificity are properties of the test; precision (PPV) also depends on how common the disease is.
+- **Labels are treatments.** If a patient got a drug because they looked sick, "no shock later" partly reflects the drug, not the patient's baseline risk.
+- **Leakage.** Using data from after the prediction moment (future lab values, the whole stay) inflates performance.
+- **Calibration.** AUROC says who is ranked higher; calibration says whether "20% risk" really means 20 out of 100.
 
-## Possible exam questions
+## Core ideas in one table
 
-### OPEN · Q1 — What is lost when vital-sign sequences become stay-level means and note chunks become one averaged embedding? Propose fixes and their costs. {#l4q1 data-source="lecture-04-bz-questions.md — Problem 1"}
+| Term | Plain meaning |
+| --- | --- |
+| AUROC / discrimination | Chance a random positive scores above a random negative. Threshold-free. |
+| Calibration | Predicted risk versus observed risk; a calibration curve or O/E ratio. |
+| PPV / precision | Of the flagged patients, how many truly have the disease. Depends on prevalence. |
+| NPV | Of the unflagged patients, how many are truly negative. |
+| O/E ratio | Observed deaths ÷ expected deaths (mean predicted risk × n). |
+| Treatment paradox | Treatment lowers risk, so treated patients look "negative" and the model learns the wrong association. |
+| Temporal leakage | Using information from the future relative to the prediction time. |
+| Dataset shift | The deployed population or data pipeline differs from training. |
+| Missingness as signal | "Was the lab measured?" often encodes clinician concern, not physiology. |
 
-<div class="response" markdown></div>
+Key formulas:
 
-### OPEN · Q2 — A balanced test gives sensitivity = specificity = precision = 0.70. At 10% prevalence, which metrics transfer and what is the approximate precision? {#l4q2 data-source="lecture-04-bz-questions.md — Problem 2"}
+$$\text{PPV} = \frac{\text{sens}\cdot p}{\text{sens}\cdot p + (1-\text{spec})(1-p)} \qquad \text{NPV} = \frac{\text{spec}(1-p)}{\text{spec}(1-p)+(1-\text{sens})p}$$
 
-<div class="response" markdown></div>
+$$O/E = \frac{\text{observed deaths}}{\text{mean predicted risk} \times n}$$
 
-### OPEN · Q3 — How do treated septic-shock negatives bias risk estimates? What happens if treated patients are removed from training or evaluation? {#l4q3 data-source="lecture-04-bz-questions.md — Problem 3"}
+## Exam questions
 
-<div class="response" markdown></div>
+### Q1 — What is lost by averaging vitals and note embeddings?
 
-### OPEN · Q4 — Why can a bidirectional LSTM work at hour 24 but fail for hourly alerts? How should retrospective training and evaluation mimic live use? {#l4q4 data-source="lecture-04-bz-questions.md — Problem 4"}
+**Answer.** Averaging a vital-sign sequence makes a recovering patient and a deteriorating one identical if they share the same mean — the **trend** disappears. Averaging ten note-chunk embeddings dilutes a single critical finding ("new pleural effusion") to one tenth of the vector. Fixes: keep trend features (slope, min, max, last value, time since abnormal) and per-chunk or attention/max pooling for text. Costs: more features and collinearity, higher overfitting risk, higher dimensionality, more data needed, and attention weights that are harder to interpret.
 
-<div class="response" markdown></div>
+### Q2 — Balanced test set, sensitivity = specificity = precision = 0.70, real prevalence 10%?
 
-### OPEN · Q5 — Model A: AUROC 0.91, mean risk 19%; B: 0.88, 8.5%; true mortality 8%. Which is calibrated, and what O/E ratio follows for 200 patients? {#l4q5 data-source="lecture-04-bz-questions.md — Problem 5"}
+**Answer.** Sensitivity, specificity and AUROC **transfer**, because they are conditional on the true class or threshold-free. Precision and accuracy **do not**: they depend on prevalence. At 10% prevalence, $\text{PPV} = \frac{0.7 \times 0.1}{0.7 \times 0.1 + 0.3 \times 0.9} = \frac{0.07}{0.34} \approx 0.21$ — about 2 in 10 alarms, not 7. Evaluate on a test set with the real prevalence and ask for calibration and net benefit.
 
-<div class="response" markdown></div>
+### Q3 — Treated septic-shock patients labelled negative?
 
-### OPEN · Q6 — Does higher AUROC in an X-ray subgroup prove multimodal benefit for everyone? What changes at a hospital with different modality availability? {#l4q6 data-source="lecture-04-bz-questions.md — Problem 6"}
+**Answer.** Treatment was given because of early signs, and treated patients who never develop shock are recorded negative, so the model learns "bolus → low risk" (**confounding by indication / treatment paradox**) and underestimates risk in similar patients. Removing treated patients fixes that bias but creates **selection bias**: you drop a clinically important subgroup, change the case mix, and the model no longer applies to the patients most likely to be treated.
 
-<div class="response" markdown></div>
+### Q4 — Bidirectional LSTM at hour 24 but not for hourly alerts?
 
-### OPEN · Q7 — False-positive rates rise with age. Will removing age fix the disparity? Propose an alternative and its audit measurements. {#l4q7 data-source="lecture-04-bz-questions.md — Problem 7"}
+**Answer.** At hour 24 the prediction uses the completed 24-hour window, so reading backwards uses no future information — acceptable. For an alert at hour $t$, a bidirectional model reads the **whole stay**, including hours after $t$: retrospective performance is inflated by **future leakage**, not merely dataset shift. Train and evaluate on causal snapshots truncated at each hour (or unidirectional models), excluding post-event data, then run a prospective silent trial.
 
-<div class="response" markdown></div>
+### Q5 — Model A AUROC 0.91 / mean risk 19%; B 0.88 / 8.5%; true mortality 8%?
+
+**Answer.** **A discriminates better** (0.91 vs 0.88), but **B is calibrated** (8.5% predicted vs 8% observed). For 200 patients: 16 deaths observed; A predicts $0.19 \times 200 = 38$, so $O/E = 16/38 \approx 0.42$ — A massively overestimates risk. Use B (or recalibrate A) for O/E comparison, since O/E requires calibration. The table alone cannot separate quality of care from case-mix differences or statistical uncertainty.
+
+### Q6 — X-ray subgroup AUROC 0.90 on 1,500 selected patients?
+
+**Answer.** Not justified for everyone. The 0.90 comes from patients who had a chest X-ray in the first 24 hours, and they have **14% mortality versus 7%** overall — a sicker, selected group, so the gain is confounded by indication. At a hospital without free-text notes the notes path is unavailable, and applying the X-ray path to all patients is a different distribution: expect a performance and calibration drop. Before use: external validation stratified by available modality, calibration, and a silent trial.
+
+### Q7 — False-positive rates rise with age: remove age?
+
+**Answer.** Removing age is unlikely to fix it, because the model reconstructs age from **proxies** (diagnoses, labs, procedures, notes), so the disparity persists while performance drops. Use subgroup-aware calibration or equalised-odds post-processing, reweighting or more training data for older patients, and audit **FPR/TPR by group**, calibration curves and net benefit, with clinicians deciding the acceptable trade-off.
+
+!!! tip "If you remember one thing"
+    AUROC tells you **who ranks higher**. It does not tell you the threshold, the false-positive count, or whether "20%" means 20%. Those are three separate questions.

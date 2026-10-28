@@ -1,61 +1,76 @@
 # 1 · Language models
 
-## Subtitles
+<div class="meta"><span class="hot">Lecture 1</span><span>~15 min</span><span>Foundations</span></div>
 
-1. Tokens, embeddings, and positions
-2. Self-attention and causal masks
-3. Next-token training and generation
-4. Prompting and instruction tuning
-5. RAG versus fine-tuning
-6. LoRA, quantization, and QLoRA
-7. Biomedical evaluation
+<p class="lead">A language model is a next-word predictor trained on huge amounts of text. Everything else — chatting, summarising, answering — is that one trick repeated.</p>
 
-## Milestones
+## In plain words
 
-- [ ] Trace a token from embedding to next-token prediction.
-- [ ] Diagnose positional and future-information leakage.
-- [ ] Choose prompting, RAG, LoRA, or QLoRA for a use case.
-- [ ] Check LoRA shapes and parameter efficiency.
-- [ ] Design a factual evaluation beyond average token loss.
+- **Tokens.** Text is cut into pieces (words or word parts). Each piece gets an ID, and each ID becomes a vector (an **embedding**).
+- **Position.** The same word means something different at the start or end of a sentence, so a **position vector** is added to each token embedding.
+- **Attention.** Each token looks at the other tokens and decides which ones matter. **Self-attention** means queries, keys and values all come from the same sentence.
+- **Causal mask.** When generating, a token may only look **backwards**. Without the mask it would see the answer it is supposed to predict.
+- **Training.** Predict the next token, compare with the real next token, adjust the weights. The text is its own label, so no human annotation is needed.
+- **Adaptation.** Prompting (no weight change), RAG (give it documents), fine-tuning or LoRA (change small parts of the weights).
 
-## Possible exam questions
+## Core ideas in one table
 
-### OPEN · Q1 — How can model A have lower average next-token loss but more factual errors than B? What does the loss establish, can greedy decoding fix it, and how would clinicians compare the letters? {#l1q1 data-source="lecture-01-bz-problems.md — Problem 1"}
+| Term | Plain meaning |
+| --- | --- |
+| Token | A word piece; the unit the model reads and writes. |
+| Embedding $e(x_i)$ | The learned vector for a token. |
+| Position $p_i$ | A vector saying *where* in the sequence the token sits. |
+| Self-attention | Q, K, V from the **same** sequence. |
+| Cross-attention | Q from one sequence (e.g. decoder), K/V from another (e.g. encoder). |
+| Causal mask | Blocks attention to future positions. |
+| Teacher forcing | Training with the real previous tokens as input. |
+| Exposure bias | At generation time the model sees its own (possibly wrong) outputs instead. |
+| Zero-shot | No examples in the prompt. |
+| Few-shot | A few examples in the prompt; weights stay frozen. |
+| LoRA | Freeze $W$ and learn a small update $\Delta W = BA$ of rank $r$. |
+| RAG | Retrieve documents at query time and put them in the prompt. |
 
-<div class="response" markdown></div>
+## Exam questions
 
-### OPEN · Q2 — Can a Transformer locate “left/right opacity” if position vectors are added before the Transformer? What if they are added only afterwards? {#l1q2 data-source="lecture-01-bz-problems.md — Problem 2"}
+### Q1 — Lower average loss but more factual errors?
 
-<div class="response" markdown></div>
+**Answer.** Loss is an average over **all** tokens, and most tokens are common boilerplate; rare, critical words (like "pending" versus "normal") barely move the average. Loss is also measured with **teacher forcing** while generation feeds the model its own output, so errors compound. Lower loss only means the model assigns slightly higher likelihood to observed text on average — it says nothing about rare facts. Greedy decoding does not fix it (it can even pick the more common but wrong phrase); you need a blinded clinician evaluation on a sample **stratified** to include abnormal and pending results, scoring clinically significant errors.
 
-### OPEN · Q3 — If only the second attention layer has a causal mask, can the representation at “is” already contain information from “absent”? {#l1q3 data-source="lecture-01-bz-problems.md — Problem 3"}
+### Q2 — Position vectors before or after the Transformer?
 
-<div class="response" markdown></div>
+**Answer.** **Before works.** Positions enter with the tokens, so attention can compare "opacity" together with "left" or "right", and the two reports produce different representations. **After fails**, because self-attention without positions is permutation-invariant: it sees the same set of tokens in both reports, and adding the same position pattern afterwards gives the same averaged vector. Order must be encoded **before** any operation that mixes tokens.
 
-### OPEN · Q4 — How should a system use frequently changing guidelines that exceed the context window and require source/version citations? Why not only fine-tune, and how could it still fail? {#l1q4 data-source="lecture-01-bz-problems.md — Problem 4"}
+### Q3 — Causal mask only in the second layer?
 
-<div class="response" markdown></div>
+**Answer.** No — the claim is wrong. Layer 1 has full attention, so the representation of "is" already contains information from "absent" before layer 2 applies its mask. The model can then predict "absent" from a representation that has seen it: **target leakage**. The mask must be causal at every layer.
 
-### OPEN · Q5 — Should three departments pool LoRA adapters when aggregate correctness rises but two departments fall? How can separate adapters share one frozen base model? {#l1q5 data-source="lecture-01-bz-problems.md — Problem 5"}
+### Q4 — Guidelines that change several times a year?
 
-<div class="response" markdown></div>
+**Answer.** Use **RAG**: index the current guidelines with document ID, section and version; retrieve the relevant sections per patient; require the answer to cite the document and version, or abstain. Fine-tuning alone fails because the weights freeze a snapshot, cannot cite a version, and underrepresent rare patient groups. It can still fail if retrieval returns an outdated or wrong section, if sections conflict, or if the patient data used for retrieval is incomplete.
 
-### RECALL · Q6 — In autoregressive pretraining, where do the prediction targets come from? {#l1q6 data-source="8dm60_multiple_choice_questions_lectures_1_2.md"}
+### Q5 — Pooled LoRA adapters or one per department?
 
-<div class="response" markdown></div>
+**Answer.** Do not adopt the pooled adapter on the aggregate number: department A has 800 of the 1000 letters, so the average is dominated by A and hides an 8–10 point regression in B and C. Report results stratified by department with confidence intervals and require no subgroup degradation. Technically one frozen base model can serve all departments: store one copy of the base weights plus three small adapters ($\Delta W = BA$, rank $r$) and route each request to its department's adapter.
 
-### RECALL · Q7 — In $h_i^{(0)} = e(x_i) + p_i$, what information does $p_i$ supply? {#l1q7 data-source="8dm60_multiple_choice_questions_lectures_1_2.md"}
+### Q6 — Where do autoregressive training targets come from?
 
-<div class="response" markdown></div>
+**Answer.** Each observed token is the target for the position before it: the model predicts token $i$ from tokens $1 \ldots i-1$. The text labels itself, so no annotator is needed.
 
-### RECALL · Q8 — What distinguishes self-attention from cross-attention? {#l1q8 data-source="8dm60_multiple_choice_questions_lectures_1_2.md"}
+### Q7 — What does $p_i$ in $h_i^{(0)} = e(x_i) + p_i$ supply?
 
-<div class="response" markdown></div>
+**Answer.** The **position** of the token in the sequence, so the model can tell the same word at different places apart.
 
-### RECALL · Q9 — What distinguishes zero-shot from few-shot prompting? {#l1q9 data-source="8dm60_multiple_choice_questions_lectures_1_2.md"}
+### Q8 — Self-attention versus cross-attention?
 
-<div class="response" markdown></div>
+**Answer.** In self-attention, queries, keys and values all come from the **same** sequence. In cross-attention, queries come from one sequence and keys/values from another.
 
-### RECALL · Q10 — For $W \in \mathbb{R}^{d \times k}$ and $\Delta W = BA$ of rank at most $r$, which shapes must $A$ and $B$ have? {#l1q10 data-source="8dm60_multiple_choice_questions_lectures_1_2.md"}
+### Q9 — Zero-shot versus few-shot?
 
-<div class="response" markdown></div>
+**Answer.** Zero-shot gives no task demonstrations; few-shot gives a few examples in the prompt. In both, the weights stay frozen — zero-shot still uses everything learned in pretraining.
+
+### Q10 — LoRA matrix shapes?
+
+**Answer.** For $W \in \mathbb{R}^{d \times k}$ and $\Delta W = BA$ of rank at most $r$: $B \in \mathbb{R}^{d \times r}$ and $A \in \mathbb{R}^{r \times k}$, so the inner dimension $r$ matches and $BA$ is $d \times k$.
+
+!!! tip "If you remember one thing"
+    Loss measures how well the model predicts **average text**, not whether it gets **rare facts** right. Say that sentence and you have half of Q1.

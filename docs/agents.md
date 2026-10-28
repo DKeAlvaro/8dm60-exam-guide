@@ -1,82 +1,94 @@
 # 6 · Agentic AI
 
-## Subtitles
+<div class="meta"><span class="hot">Lecture 6</span><span>~20 min</span><span>Tools and loops</span></div>
 
-1. Tool requests and the agent harness
-2. ReAct: reason, act, observe
-3. Predefined workflows versus agents
-4. Prompt chaining, routing, and parallelization
-5. Orchestrator-workers and evaluator-optimizer
-6. Stopping, checks, and human approval
-7. Trajectory, outcome, and cost evaluation
-8. AI-SCE and clinical transfer
+<p class="lead">A plain language model only writes text. An agent is a language model inside a loop: it asks to use a tool, a program runs the tool, and the result comes back as text the model can reason about.</p>
 
-## Milestones
+## In plain words
 
-- [ ] Trace a tool request through execution and observation.
-- [ ] Classify every workflow pattern from its control flow.
-- [ ] Justify an agent only when paths depend on observations.
-- [ ] Define acceptance, revision, stopping, and escalation criteria.
-- [ ] Evaluate trajectories, outcomes, cost, and clinical transfer.
+- **Tool use.** The model writes a structured request; the surrounding program executes it; the result is returned to the model.
+- **ReAct.** Reason → act → observe → repeat, until a stopping condition.
+- **Workflow versus agent.** The difference is **who decides the next step**. A workflow has paths coded in advance; an agent lets the model choose based on what it observed.
+- **Five workflow patterns.** Prompt chaining, routing, parallelization, orchestrator–workers, evaluator–optimizer.
+- **Evaluation.** You judge the **trajectory** (which tools, which steps, was evidence cited) as well as the final answer, and you count cost.
 
-## Possible exam questions
+## Core ideas in one table
 
-### OPEN · Q1 — A model writes correctly formatted tool requests. Is tool integration therefore complete? What else must be established? {#l6q1 data-source="lecture-06-bz-problems.md — Problem 1"}
+| Term | Plain meaning |
+| --- | --- |
+| Tool request | Model output naming a tool and arguments. |
+| Harness / environment | The program that executes the tool and returns the observation. |
+| Observation | The tool's returned result, **not** something the model imagined. |
+| ReAct | Interleave reasoning and actions, using observations for the next step. |
+| Few-shot ReAct | Example trajectories in the prompt; weights stay fixed. |
+| Prompt chaining | Fixed sequence of LLM calls, each using the previous output. |
+| Routing | Classify the request and send it to **one** specialist handler. |
+| Parallelization | Independent subtasks run at once, then aggregate. |
+| Orchestrator–workers | The orchestrator decides **at runtime** which subtasks are needed. |
+| Evaluator–optimizer | A generator drafts; an evaluator accepts or returns feedback. |
+| Trajectory | The full sequence of steps, tool calls and observations. |
 
-<div class="response" markdown></div>
+## Exam questions
 
-### OPEN · Q2 — All analysis paths and exceptions are known in advance. Choose a predefined workflow or an agent, based on what determines the next step. {#l6q2 data-source="lecture-06-bz-problems.md — Problem 2"}
+### Q1 — Correctly formatted tool requests: is integration complete?
 
-<div class="response" markdown></div>
+**Answer.** No. A description in the prompt only shows the model how to **write** a request; it does not prove the request is executed, that arguments are valid, that results are parsed and fed back, or that the tool works on real inputs. You need an **end-to-end test**: real invocation, schema validation, error handling, and final outputs checked against ground truth on representative cases.
 
-### OPEN · Q3 — Should independent record summaries use parallelization, and a case where findings determine the next review use orchestrator-workers? Why? {#l6q3 data-source="lecture-06-bz-problems.md — Problem 3"}
+### Q2 — All paths and exceptions known: workflow or agent?
 
-<div class="response" markdown></div>
+**Answer.** A **predefined workflow**. The deciding question is whether the possible paths can be enumerated in advance, not whether the system branches or uses an LLM. An agent adds non-determinism, cost, latency and validation burden with no benefit when the logic is fixed; explicit branches and human-review steps are easier to validate, monitor and audit.
 
-### OPEN · Q4 — Design evaluator–optimizer acceptance and stopping criteria for summaries that must preserve findings, values, units, and chronology. {#l6q4 data-source="lecture-06-bz-problems.md — Problem 4"}
+### Q3 — Parallelization or orchestrator–workers?
 
-<div class="response" markdown></div>
+**Answer.** Independent, pre-defined summaries → **parallelization** (all subtasks run, results aggregated). When which reviews are relevant depends on the case → **orchestrator–workers** (decomposition at runtime). The difference that matters is whether subtasks are fixed in advance or chosen during execution. Orchestration adds coordination cost: more calls and latency, error propagation, non-determinism, harder evaluation, and a synthesizer that must reconcile outputs.
 
-### OPEN · Q5 — Design an AI-SCE comparison of a fixed record-review workflow and an agent, covering outcomes, process, interactions, and resource use. {#l6q5 data-source="lecture-06-bz-problems.md — Problem 5"}
+### Q4 — Evaluator–optimizer acceptance and stopping criteria
 
-<div class="response" markdown></div>
+**Answer.** Use **deterministic checks** for facts: every requested finding present, values and units exact, chronology correct, no fabricated values. Use a **judge** for wording: clarity, coherence, no unsupported claims. Accept only when all deterministic checks pass **and** the judge is above threshold with no new unsupported claims. Use a revision limit as a fallback, but record "revision limit reached" as a **failure**, distinct from acceptance; log the reason and validate the evaluator itself against held-out human ratings.
 
-### RECALL · Q6 — In a ReAct-style system, where does the observation after a search request come from? {#l6q6 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q5 — Design an AI-SCE evaluation of workflow versus agent
 
-<div class="response" markdown></div>
+**Answer.** Include missing information, inconsistent records, ambiguous findings and routine controls. Record every tool call, step, token and second, and whether missing information was identified and inconsistencies resolved. Compare **outcomes** (correctness/completeness against ground truth), **process** (evidence attribution, unnecessary queries, appropriate escalation) and **cost**. To separate supported from accidentally correct answers, require each statement to cite its source record and inject known inconsistencies.
 
-### RECALL · Q7 — What defines the ReAct approach? {#l6q7 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q6 — Where does the observation come from?
 
-<div class="response" markdown></div>
+**Answer.** The **tool executed by the surrounding program** — the model only requests it. The tool description in the prompt is instructions, not an observation.
 
-### RECALL · Q8 — How do few-shot demonstrations influence a ReAct model without changing its weights? {#l6q8 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q7 — What defines ReAct?
 
-<div class="response" markdown></div>
+**Answer.** Interleaving reasoning and actions, using observations to inform the next step. Not a fixed plan, not a post-hoc explanation, not two separately trained models.
 
-### RECALL · Q9 — Why can external search reduce factual hallucinations? {#l6q9 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q8 — How do few-shot demonstrations affect ReAct?
 
-<div class="response" markdown></div>
+**Answer.** They put example trajectories in the context (in-context learning); the weights stay fixed. They do not update parameters or train a controller.
 
-### RECALL · Q10 — What is the main distinction between workflows and agents? {#l6q10 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q9 — Why can search reduce hallucinations?
 
-<div class="response" markdown></div>
+**Answer.** It supplies **evidence** the model can use in later reasoning, instead of relying on memorised or invented facts. It does not update the weights during the session.
 
-### RECALL · Q11 — Extract findings → draft summary → translate summary: which workflow pattern is this? {#l6q11 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q10 — Workflows versus agents?
 
-<div class="response" markdown></div>
+**Answer.** Workflows use **predefined code paths**; agents let the **LLM direct** the process and tool use. Neither changes the weights.
 
-### RECALL · Q12 — Classify a request and send it to a specialist handler: which workflow pattern is this? {#l6q12 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q11 — Extract → draft → translate: which pattern?
 
-<div class="response" markdown></div>
+**Answer.** **Prompt chaining**: sequential LLM calls, each consuming the previous output.
 
-### RECALL · Q13 — Which agent capability is least directly tested by a static medical multiple-choice benchmark? {#l6q13 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q12 — Classify then send to a specialist handler?
 
-<div class="response" markdown></div>
+**Answer.** **Routing** — one path is selected. Parallelization would run several paths and aggregate; that is the classic trap.
 
-### RECALL · Q14 — What is the role of agent-based modeling in clinical evaluations? {#l6q14 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q13 — What does a static MCQ benchmark miss?
 
-<div class="response" markdown></div>
+**Answer.** **Deciding what information to request** as a consultation develops. Static questions test recall and single-step association, not interactive information gathering.
 
-### RECALL · Q15 — After strong simulated performance, what evidence is needed for transfer to actual care? {#l6q15 data-source="8dm60_multiple_choice_questions_lecture_6.md"}
+### Q14 — Role of agent-based modelling?
 
-<div class="response" markdown></div>
+**Answer.** To **simulate the actions and interactions of participants** in a clinical environment, so a system can be tested against realistic behaviour before real deployment.
+
+### Q15 — After good simulated performance?
+
+**Answer.** Test **real-world impact in clinical studies** and **monitor after deployment**. More simulation or more static questions do not address transfer.
+
+!!! tip "If you remember one thing"
+    Workflow or agent? Ask: **can I list the paths in advance?** Yes → workflow. No, the next step depends on what the tool returns → agent. Never answer "because it uses an LLM".
