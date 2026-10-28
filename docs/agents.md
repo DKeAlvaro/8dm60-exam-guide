@@ -1,94 +1,86 @@
 # 6 · Agentic AI
 
-<div class="meta"><span class="hot">Lecture 6</span><span>~20 min</span><span>Tools and loops</span></div>
+<div class="meta"><span class="hot">Lecture 6</span><span>~20 min</span><span>Read → answer → check</span></div>
 
-<p class="lead">A plain language model only writes text. An agent is a language model inside a loop: it asks to use a tool, a program runs the tool, and the result comes back as text the model can reason about.</p>
+<p class="lead">A language model alone only writes text. An agent is a model inside a loop where it can use tools. This page defines the loop and the five patterns, then tests each.</p>
 
-## In plain words
+## 1. Tools turn text into actions
 
-- **Tool use.** The model writes a structured request; the surrounding program executes it; the result is returned to the model.
-- **ReAct.** Reason → act → observe → repeat, until a stopping condition.
-- **Workflow versus agent.** The difference is **who decides the next step**. A workflow has paths coded in advance; an agent lets the model choose based on what it observed.
-- **Five workflow patterns.** Prompt chaining, routing, parallelization, orchestrator–workers, evaluator–optimizer.
-- **Evaluation.** You judge the **trajectory** (which tools, which steps, was evidence cited) as well as the final answer, and you count cost.
+**Explanation.** A **tool** is a function the model is allowed to call (search, database query, calculator). The model emits a structured **tool request**; the **harness** — the surrounding program, not the model — executes it and returns the result as an **observation**. The observation is tool output, never something the model predicted.
 
-## Core ideas in one table
+!!! question "Check yourself"
+    A model produces perfectly formatted tool calls in every test. Is the tool integration complete? What must you test?
 
-| Term | Plain meaning |
-| --- | --- |
-| Tool request | Model output naming a tool and arguments. |
-| Harness / environment | The program that executes the tool and returns the observation. |
-| Observation | The tool's returned result, **not** something the model imagined. |
-| ReAct | Interleave reasoning and actions, using observations for the next step. |
-| Few-shot ReAct | Example trajectories in the prompt; weights stay fixed. |
-| Prompt chaining | Fixed sequence of LLM calls, each using the previous output. |
-| Routing | Classify the request and send it to **one** specialist handler. |
-| Parallelization | Independent subtasks run at once, then aggregate. |
-| Orchestrator–workers | The orchestrator decides **at runtime** which subtasks are needed. |
-| Evaluator–optimizer | A generator drafts; an evaluator accepts or returns feedback. |
-| Trajectory | The full sequence of steps, tool calls and observations. |
+??? success "Answer"
+    No. Prompting a description only shows the model how to **write** a request; it does not prove execution, valid arguments, parsing of the result, or correct tool behaviour. Test end-to-end: real invocation, schema validation, error handling, and final answers against ground truth on representative cases.
 
-## Exam questions
+## 2. ReAct: reason, act, observe
 
-### Q1 — Correctly formatted tool requests: is integration complete?
+**Explanation.** **ReAct** interleaves **reasoning** (text about what to do) and **actions** (tool calls), using each observation to decide the next step. **Few-shot ReAct** puts example trajectories in the prompt; the weights do not change.
 
-**Answer.** No. A description in the prompt only shows the model how to **write** a request; it does not prove the request is executed, that arguments are valid, that results are parsed and fed back, or that the tool works on real inputs. You need an **end-to-end test**: real invocation, schema validation, error handling, and final outputs checked against ground truth on representative cases.
+!!! question "Check yourself"
+    After the model requests a search, where does the observation come from, and why can search reduce hallucinations?
 
-### Q2 — All paths and exceptions known: workflow or agent?
+??? success "Answer"
+    From the **search tool executed by the harness**. Search supplies external evidence the model can use in later reasoning, instead of relying on memorised or invented facts; it does not update the weights.
 
-**Answer.** A **predefined workflow**. The deciding question is whether the possible paths can be enumerated in advance, not whether the system branches or uses an LLM. An agent adds non-determinism, cost, latency and validation burden with no benefit when the logic is fixed; explicit branches and human-review steps are easier to validate, monitor and audit.
+## 3. Workflow or agent: who chooses the next step?
 
-### Q3 — Parallelization or orchestrator–workers?
+**Explanation.** A **workflow** is a system where the possible paths are written in code in advance. An **agent** is a system where the **LLM decides** the next step and which tools to use based on what it observed. Both keep the weights fixed. The deciding question is not "does it use an LLM" but "**can I enumerate the paths in advance?**"
 
-**Answer.** Independent, pre-defined summaries → **parallelization** (all subtasks run, results aggregated). When which reviews are relevant depends on the case → **orchestrator–workers** (decomposition at runtime). The difference that matters is whether subtasks are fixed in advance or chosen during execution. Orchestration adds coordination cost: more calls and latency, error propagation, non-determinism, harder evaluation, and a synthesizer that must reconcile outputs.
+!!! question "Check yourself"
+    A record-review pipeline has known exceptions: if quality fails, replace the image; if measurements are missing, send to a human. Workflow or agent?
 
-### Q4 — Evaluator–optimizer acceptance and stopping criteria
+??? success "Answer"
+    **Workflow**. Every path can be enumerated in advance, so explicit branches are easier to validate, monitor and audit. An agent adds non-determinism, cost, latency and validation burden with no benefit.
 
-**Answer.** Use **deterministic checks** for facts: every requested finding present, values and units exact, chronology correct, no fabricated values. Use a **judge** for wording: clarity, coherence, no unsupported claims. Accept only when all deterministic checks pass **and** the judge is above threshold with no new unsupported claims. Use a revision limit as a fallback, but record "revision limit reached" as a **failure**, distinct from acceptance; log the reason and validate the evaluator itself against held-out human ratings.
+## 4. The five workflow patterns
 
-### Q5 — Design an AI-SCE evaluation of workflow versus agent
+**Explanation.**
 
-**Answer.** Include missing information, inconsistent records, ambiguous findings and routine controls. Record every tool call, step, token and second, and whether missing information was identified and inconsistencies resolved. Compare **outcomes** (correctness/completeness against ground truth), **process** (evidence attribution, unnecessary queries, appropriate escalation) and **cost**. To separate supported from accidentally correct answers, require each statement to cite its source record and inject known inconsistencies.
+- **Prompt chaining:** fixed sequence of calls, each using the previous output.
+- **Routing:** classify the request, then send it to **one** specialist handler.
+- **Parallelization:** independent subtasks run at the same time, then an aggregator combines them.
+- **Orchestrator–workers:** an orchestrator decides **at runtime** which subtasks are needed, workers do them, a synthesizer combines.
+- **Evaluator–optimizer:** a generator drafts; an evaluator accepts or returns feedback for revision.
 
-### Q6 — Where does the observation come from?
+!!! question "Check yourself"
+    Name the pattern for each: (a) extract findings → draft summary → translate; (b) classify a request and send it to a cardiology handler; (c) summarise three independent records at once; (d) decide per case which specialist reviews are needed.
 
-**Answer.** The **tool executed by the surrounding program** — the model only requests it. The tool description in the prompt is instructions, not an observation.
+??? success "Answer"
+    (a) prompt chaining; (b) **routing** (not parallelization — only one path runs); (c) parallelization; (d) orchestrator–workers (subtasks chosen at runtime). The distinction between (c) and (d) is whether the decomposition is fixed before execution.
 
-### Q7 — What defines ReAct?
+!!! question "Check yourself"
+    Why might orchestrator–workers be worth its extra cost, and what is that cost?
 
-**Answer.** Interleaving reasoning and actions, using observations to inform the next step. Not a fixed plan, not a post-hoc explanation, not two separately trained models.
+??? success "Answer"
+    It is worth it when which subtasks are needed depends on the case, so delegation must happen at runtime. The cost is coordination: more LLM calls and latency, error propagation, non-determinism, harder evaluation, and a synthesizer that must reconcile outputs.
 
-### Q8 — How do few-shot demonstrations affect ReAct?
+## 5. Acceptance and stopping criteria
 
-**Answer.** They put example trajectories in the context (in-context learning); the weights stay fixed. They do not update parameters or train a controller.
+**Explanation.** An agent needs a **stop condition**: success, a revision limit, or escalation to a human. **Acceptance criteria** define success. Deterministic checks (values, units, required findings) should be separate from judgement calls (clarity, emphasis). Reaching the revision limit is a **failure**, not an acceptance.
 
-### Q9 — Why can search reduce hallucinations?
+!!! question "Check yourself"
+    Design acceptance and stopping criteria for a summary that must preserve findings, values, units and chronology.
 
-**Answer.** It supplies **evidence** the model can use in later reasoning, instead of relying on memorised or invented facts. It does not update the weights during the session.
+??? success "Answer"
+    Deterministic checks: every requested finding present, values and units exact, chronology correct, no fabricated values. Judgement: clarity, coherence, no unsupported claims. Accept only when all deterministic checks pass **and** the judge is above threshold; otherwise revise up to a fixed limit, and log "revision limit reached" as a failure. Validate the evaluator against human ratings to avoid self-preference.
 
-### Q10 — Workflows versus agents?
+## 6. Evaluating trajectories, not just answers
 
-**Answer.** Workflows use **predefined code paths**; agents let the **LLM direct** the process and tool use. Neither changes the weights.
+**Explanation.** A **trajectory** is the full sequence of reasoning steps, tool calls and observations. **Outcome evaluation** checks the final answer; **process evaluation** checks whether the right evidence was gathered and cited. **AI-SCE** (simulated clinical environment) places the system in a simulated encounter; **agent-based modelling** simulates the actions and interactions of participants.
 
-### Q11 — Extract → draft → translate: which pattern?
+!!! question "Check yourself"
+    How would you distinguish a well-supported summary from one that is accidentally correct?
 
-**Answer.** **Prompt chaining**: sequential LLM calls, each consuming the previous output.
+??? success "Answer"
+    Require each statement to cite its source record, score supported-but-correct statements as failures if unsupported, inject known inconsistencies to see whether they are detected, and use blinded graders on paired cases. Accidental correctness disappears when the evidence chain is checked.
 
-### Q12 — Classify then send to a specialist handler?
+!!! question "Check yourself"
+    An agent performs strongly in simulation. What evidence is needed before real care, and what does a static MCQ benchmark miss?
 
-**Answer.** **Routing** — one path is selected. Parallelization would run several paths and aggregate; that is the classic trap.
-
-### Q13 — What does a static MCQ benchmark miss?
-
-**Answer.** **Deciding what information to request** as a consultation develops. Static questions test recall and single-step association, not interactive information gathering.
-
-### Q14 — Role of agent-based modelling?
-
-**Answer.** To **simulate the actions and interactions of participants** in a clinical environment, so a system can be tested against realistic behaviour before real deployment.
-
-### Q15 — After good simulated performance?
-
-**Answer.** Test **real-world impact in clinical studies** and **monitor after deployment**. More simulation or more static questions do not address transfer.
+??? success "Answer"
+    Real-world clinical studies and post-deployment monitoring — simulation cannot establish transfer. A static MCQ benchmark misses **deciding what information to request** as a consultation develops, because it tests recall and single-step association, not interactive information gathering.
 
 !!! tip "If you remember one thing"
-    Workflow or agent? Ask: **can I list the paths in advance?** Yes → workflow. No, the next step depends on what the tool returns → agent. Never answer "because it uses an LLM".
+    Workflow or agent? Ask **can I list the paths in advance?** Yes → workflow. No → agent. Never answer "because it uses an LLM".

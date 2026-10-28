@@ -1,76 +1,106 @@
 # 1 · Language models
 
-<div class="meta"><span class="hot">Lecture 1</span><span>~15 min</span><span>Foundations</span></div>
+<div class="meta"><span class="hot">Lecture 1</span><span>~15 min</span><span>Read → answer → check</span></div>
 
-<p class="lead">A language model is a next-word predictor trained on huge amounts of text. Everything else — chatting, summarising, answering — is that one trick repeated.</p>
+<p class="lead">Each idea is explained in plain words and ends with a question. Answer it out loud before opening the answer — that is the exam skill.</p>
 
-## In plain words
+## 1. Text becomes tokens
 
-- **Tokens.** Text is cut into pieces (words or word parts). Each piece gets an ID, and each ID becomes a vector (an **embedding**).
-- **Position.** The same word means something different at the start or end of a sentence, so a **position vector** is added to each token embedding.
-- **Attention.** Each token looks at the other tokens and decides which ones matter. **Self-attention** means queries, keys and values all come from the same sentence.
-- **Causal mask.** When generating, a token may only look **backwards**. Without the mask it would see the answer it is supposed to predict.
-- **Training.** Predict the next token, compare with the real next token, adjust the weights. The text is its own label, so no human annotation is needed.
-- **Adaptation.** Prompting (no weight change), RAG (give it documents), fine-tuning or LoRA (change small parts of the weights).
+**Explanation.** A model cannot read letters, so text is cut into **tokens**: common words stay whole, rare words are split into pieces ("unhappiness" → "un" + "happi" + "ness"). Every token in the **vocabulary** (the fixed list of tokens the model knows) has an ID, and each ID is mapped to a learned vector called an **embedding** — a list of numbers that represents the token's meaning.
 
-## Core ideas in one table
+**Why pieces.** A fixed vocabulary cannot contain every word, especially in medicine ("pneumonoultramicroscopic..."), so splitting lets the model build rare words from known parts.
 
-| Term | Plain meaning |
-| --- | --- |
-| Token | A word piece; the unit the model reads and writes. |
-| Embedding $e(x_i)$ | The learned vector for a token. |
-| Position $p_i$ | A vector saying *where* in the sequence the token sits. |
-| Self-attention | Q, K, V from the **same** sequence. |
-| Cross-attention | Q from one sequence (e.g. decoder), K/V from another (e.g. encoder). |
-| Causal mask | Blocks attention to future positions. |
-| Teacher forcing | Training with the real previous tokens as input. |
-| Exposure bias | At generation time the model sees its own (possibly wrong) outputs instead. |
-| Zero-shot | No examples in the prompt. |
-| Few-shot | A few examples in the prompt; weights stay frozen. |
-| LoRA | Freeze $W$ and learn a small update $\Delta W = BA$ of rank $r$. |
-| RAG | Retrieve documents at query time and put them in the prompt. |
+!!! question "Check yourself"
+    Why does a model use word pieces instead of whole words, and what does the embedding of a token contain?
 
-## Exam questions
+??? success "Answer"
+    Whole words would need an enormous vocabulary and would still miss new or rare terms; pieces let rare words be composed from known parts. The embedding is a learned vector of numbers representing that token, learned during training — not a dictionary definition.
 
-### Q1 — Lower average loss but more factual errors?
+## 2. Positions tell the model where a token sits
 
-**Answer.** Loss is an average over **all** tokens, and most tokens are common boilerplate; rare, critical words (like "pending" versus "normal") barely move the average. Loss is also measured with **teacher forcing** while generation feeds the model its own output, so errors compound. Lower loss only means the model assigns slightly higher likelihood to observed text on average — it says nothing about rare facts. Greedy decoding does not fix it (it can even pick the more common but wrong phrase); you need a blinded clinician evaluation on a sample **stratified** to include abnormal and pending results, scoring clinically significant errors.
+**Explanation.** Attention (next section) looks at all tokens at once and does not know their order. So a **position vector** $p_i$ — a second learned vector that depends only on the index $i$ — is added to each token embedding: $h_i^{(0)} = e(x_i) + p_i$. Without it, "dog bites man" and "man bites dog" look identical.
 
-### Q2 — Position vectors before or after the Transformer?
+**Term.** *Permutation-invariant* means the result does not change if you reorder the inputs.
 
-**Answer.** **Before works.** Positions enter with the tokens, so attention can compare "opacity" together with "left" or "right", and the two reports produce different representations. **After fails**, because self-attention without positions is permutation-invariant: it sees the same set of tokens in both reports, and adding the same position pattern afterwards gives the same averaged vector. Order must be encoded **before** any operation that mixes tokens.
+!!! question "Check yourself"
+    Two radiology reports contain the same words in different order: "left opacity, right clear" and "left clear, right opacity". A model adds no position information. Can it tell them apart, and why?
 
-### Q3 — Causal mask only in the second layer?
+??? success "Answer"
+    No. Without positions the model sees the same **set** of token vectors for both reports; attention is permutation-invariant, so it produces the same representation. Order must be encoded before anything mixes the tokens.
 
-**Answer.** No — the claim is wrong. Layer 1 has full attention, so the representation of "is" already contains information from "absent" before layer 2 applies its mask. The model can then predict "absent" from a representation that has seen it: **target leakage**. The mask must be causal at every layer.
+## 3. Self-attention mixes tokens
 
-### Q4 — Guidelines that change several times a year?
+**Explanation.** Each token creates three vectors: a **query** $q$ ("what am I looking for?"), a **key** $k$ ("what do I contain?") and a **value** $v$ ("what do I pass on?"). The model compares each query with all keys (dot product), turns the scores into weights with **softmax** (a function that makes a list of scores sum to 1), and uses the weights to average the values. That average is the token's new, context-aware representation.
 
-**Answer.** Use **RAG**: index the current guidelines with document ID, section and version; retrieve the relevant sections per patient; require the answer to cite the document and version, or abstain. Fine-tuning alone fails because the weights freeze a snapshot, cannot cite a version, and underrepresent rare patient groups. It can still fail if retrieval returns an outdated or wrong section, if sections conflict, or if the patient data used for retrieval is incomplete.
+**Self vs cross.** In **self-attention**, Q, K and V all come from the same sequence. In **cross-attention**, Q comes from one sequence (e.g. the decoder) and K/V from another (e.g. the encoder).
 
-### Q5 — Pooled LoRA adapters or one per department?
+!!! question "Check yourself"
+    In a Transformer encoder–decoder translation model, which attention uses queries from the German sentence and keys/values from the English one?
 
-**Answer.** Do not adopt the pooled adapter on the aggregate number: department A has 800 of the 1000 letters, so the average is dominated by A and hides an 8–10 point regression in B and C. Report results stratified by department with confidence intervals and require no subgroup degradation. Technically one frozen base model can serve all departments: store one copy of the base weights plus three small adapters ($\Delta W = BA$, rank $r$) and route each request to its department's adapter.
+??? success "Answer"
+    Cross-attention: the decoder (generating English) supplies the queries; the encoder representation of the source supplies keys and values. Self-attention would take all three from the same sequence.
 
-### Q6 — Where do autoregressive training targets come from?
+## 4. The causal mask stops the model seeing the future
 
-**Answer.** Each observed token is the target for the position before it: the model predicts token $i$ from tokens $1 \ldots i-1$. The text labels itself, so no annotator is needed.
+**Explanation.** During **autoregressive** training (predict the next token), the model must not look at the token it is supposed to predict. A **causal mask** sets the attention weights to zero for all future positions, so position $i$ can only attend to positions $\le i$. Remove it and the model trivially copies the answer — **leakage**.
 
-### Q7 — What does $p_i$ in $h_i^{(0)} = e(x_i) + p_i$ supply?
+!!! question "Check yourself"
+    A decoder has two attention layers. Only layer 2 has a causal mask; layer 1 is full attention. Can the representation at "is" already contain information from a later word "absent"?
 
-**Answer.** The **position** of the token in the sequence, so the model can tell the same word at different places apart.
+??? success "Answer"
+    Yes. Layer 1 attended to every position, including "absent", so its output at "is" already contains that information. The mask in layer 2 only restricts attention *inside* layer 2. The mask must be causal at **every** layer, otherwise the model can leak the target.
 
-### Q8 — Self-attention versus cross-attention?
+## 5. Training is next-token prediction
 
-**Answer.** In self-attention, queries, keys and values all come from the **same** sequence. In cross-attention, queries come from one sequence and keys/values from another.
+**Explanation.** For each position the model predicts a probability distribution over the vocabulary, and the **loss** (cross-entropy) measures how much probability it gave to the actual next token. The text supplies its own labels, so pretraining needs no annotators.
 
-### Q9 — Zero-shot versus few-shot?
+**Teacher forcing** means training with the *real* previous tokens as input. At generation time the model instead sees its **own** previous outputs, so one early mistake changes everything after it — **exposure bias**. **Greedy decoding** always picks the single most probable next token.
 
-**Answer.** Zero-shot gives no task demonstrations; few-shot gives a few examples in the prompt. In both, the weights stay frozen — zero-shot still uses everything learned in pretraining.
+!!! question "Check yourself"
+    Model A has lower average next-token loss than B, yet writes "normal" when the report says "pending" more often. What does the lower loss actually establish, and does greedy decoding fix it?
 
-### Q10 — LoRA matrix shapes?
+??? success "Answer"
+    Loss is an average over all tokens, and most tokens are common boilerplate; rare critical words barely move it. Lower loss only means A assigns slightly higher likelihood to observed text on average under teacher forcing — not that it is factually reliable. Greedy decoding does not fix it and can worsen it: the most probable continuation is often the frequent phrase ("was normal"), and greedy removes any chance of choosing the rarer correct word.
 
-**Answer.** For $W \in \mathbb{R}^{d \times k}$ and $\Delta W = BA$ of rank at most $r$: $B \in \mathbb{R}^{d \times r}$ and $A \in \mathbb{R}^{r \times k}$, so the inner dimension $r$ matches and $BA$ is $d \times k$.
+## 6. Prompting: zero-shot, few-shot, instruction tuning
+
+**Explanation.** **Zero-shot** gives the model a task with no examples. **Few-shot** puts a few example input–output pairs in the prompt. **Instruction tuning** is a training stage on instruction–answer pairs so the model follows requests. In prompting, the weights never change.
+
+!!! question "Check yourself"
+    A clinician pastes three example discharge letters before asking for a new one. Is this zero-shot, few-shot, or fine-tuning?
+
+??? success "Answer"
+    Few-shot prompting: examples in the context, weights frozen. Fine-tuning would update the model's parameters; zero-shot would give no examples.
+
+## 7. RAG: give the model documents
+
+**Explanation.** **Retrieval-augmented generation** searches an indexed collection of documents, puts the relevant passages into the prompt, and asks the model to answer using them. The index can be rebuilt whenever documents change; the model's weights stay frozen. It is the standard answer for knowledge that changes and must be cited.
+
+!!! question "Check yourself"
+    Clinical guidelines change several times a year and answers must cite the version. Should you fine-tune or use RAG, and how can the system still fail?
+
+??? success "Answer"
+    Use RAG with a versioned index and require citations (or abstain). Fine-tuning freezes a snapshot, cannot cite a version, and underrepresents rare cases. It can still fail if retrieval returns an outdated or wrong section, if retrieved passages conflict, or if the patient data used for retrieval is incomplete.
+
+## 8. LoRA: cheap adaptation
+
+**Explanation.** **LoRA** freezes the original weight matrix $W$ and learns a small low-rank update $\Delta W = BA$, where $B$ is $d \times r$, $A$ is $r \times k$, and the **rank** $r$ is tiny compared with $d$ and $k$. Only $A$ and $B$ are trained, so one base model can serve many tasks by swapping adapters. **Quantization** stores weights in fewer bits (e.g. 4-bit) to save memory; **QLoRA** = quantized base + LoRA.
+
+!!! question "Check yourself"
+    $W$ is $4096 \times 4096$ and $r = 8$. How many parameters does LoRA train, and why can one base model serve three departments?
+
+??? success "Answer"
+    $B$ is $4096 \times 8$ and $A$ is $8 \times 4096$, so $2 \times 32{,}768 = 65{,}536$ parameters instead of ~16.8 million — about 0.4%. The base weights stay frozen and shared; store one copy plus three small adapters and route each request to its department's adapter.
+
+## 9. Evaluating facts, not averages
+
+**Explanation.** A good evaluation defines the **unit** (letter, report, patient), the **outcome** (e.g. "letter contains a clinically significant factual error"), the **reference standard** (clinician review against the source record), and the **comparison** (paired, blinded, with confidence intervals).
+
+!!! question "Check yourself"
+    Design a comparison of two letter-writing models so that a difference in style cannot masquerade as a difference in safety.
+
+??? success "Answer"
+    Sample held-out reports **stratified** to include abnormal and pending results; show each clinician the source report and both letters in random order, blinded to the model; have them mark every claim as supported, contradicted or unsupported, with severity. Primary outcome: proportion of letters with at least one clinically significant error; compare paired per report (e.g. McNemar) and report confidence intervals and inter-rater agreement.
 
 !!! tip "If you remember one thing"
-    Loss measures how well the model predicts **average text**, not whether it gets **rare facts** right. Say that sentence and you have half of Q1.
+    A lower loss means better **average text prediction**, not better **facts**. Say that and half of question 1 is answered.

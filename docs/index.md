@@ -2,7 +2,7 @@
 
 <div class="meta"><span class="hot">Written exam · 28 October</span><span>13:30–16:30</span><span>Closed book</span></div>
 
-<p class="lead">Everything you need in plain words: one short page per topic, plus a cram sheet and the worked past exercises.</p>
+<p class="lead">One short page per topic. Every idea is explained in plain words and ends with a question — answer it before you open the answer.</p>
 
 ## If you only have two hours
 
@@ -27,12 +27,14 @@
 
 ## The six topics
 
-1. [Language models](language.md) — how text models work and how we adapt them.
-2. [Vision models](vision.md) — how images become vectors, from DINO to CLIP to LLaVA.
-3. [Omics models](omics.md) — single-cell data, scVI, scGPT, and predicting drug effects.
-4. [Models for hospital data](hospital.md) — patient records, bias, leakage, calibration.
-5. [Clinical workflow integration](workflow.md) — how a model actually gets used in a hospital.
-6. [Agentic AI](agents.md) — LLMs with tools, workflows versus agents.
+Each page: explanation → one question → hidden answer.
+
+1. [Language models](language.md) — tokens, attention, training, prompting, RAG, LoRA.
+2. [Vision models](vision.md) — DINO, CLIP, VLMs, validation.
+3. [Omics models](omics.md) — scVI, scGPT, CPA, GEARS, perturbation metrics.
+4. [Models for hospital data](hospital.md) — representations, bias, leakage, calibration.
+5. [Clinical workflow integration](workflow.md) — deployment, thresholds, governance, money.
+6. [Agentic AI](agents.md) — tools, ReAct, workflows versus agents.
 
 ## Extras
 

@@ -2,47 +2,60 @@
 
 <div class="meta"><span class="hot">Poster + code</span><span>15% of the grade</span><span>Be specific</span></div>
 
-<p class="lead">These questions are about <em>your</em> poster and code, so nobody can answer them for you. What follows is the shape of a good answer: one claim, one number, one limitation.</p>
+<p class="lead">These questions are about your poster and code, so the answers are yours. Below is the shape of a good answer and the terms you must be able to define on the spot.</p>
+
+## Terms you must know
+
+| Term | Plain meaning |
+| --- | --- |
+| Baseline | The simplest reference result you must beat (majority class, logistic regression, no-change). |
+| Leakage | Information in training/test that you would not have at prediction time, or that encodes the answer. |
+| Internal validation | Held-out data from the same dataset. |
+| External validation | Data collected independently, another site, period or population. |
+| Calibration | Predicted risk versus observed risk. |
+| Confidence interval | A range that expresses uncertainty around an estimate; overlapping intervals mean the difference may be noise. |
+| Ablation | Remove one component and measure what changes, to show it mattered. |
+| Reproducibility | Somebody else can rerun your code on the raw inputs and get your numbers. |
 
 ## How to answer any project question
 
-1. **Start with the claim, not the method.** "We tested whether X predicts Y."
-2. **Give the number.** Effect size, metric, confidence interval if you have one.
-3. **Name the limitation before they do.** It shows you understand it.
-4. **Point to the code.** "This figure comes from `notebook X`, cell Y, seed 42."
+1. **Claim first.** "We tested whether X predicts Y."
+2. **Number second.** Effect size or metric, with an interval if you have one.
+3. **Limitation third.** Name it before the examiner does.
+4. **Point to the code.** "Figure 2 comes from notebook 3, cell 12, seed 42."
 
-!!! warning "The three answers that lose points"
-    "The model is better" without a baseline. "We got 0.9 accuracy" when the classes are imbalanced. "We used a random train/test split" without mentioning patient overlap.
+!!! warning "Three answers that lose points"
+    "The model is better" with no baseline. "We got 0.9 accuracy" on imbalanced classes. "Random split" without mentioning patient overlap.
 
-## Exam questions
+## Questions to rehearse out loud
 
-### Q1 — What is your research question, and which result answers it?
+### What is your research question, and which result answers it?
 
-**How to answer.** One sentence with a population, an input, an outcome. Then the exact figure or table on the poster that tests it. If the question changed during the project, say so and why.
+Say the population, the input and the outcome in one sentence, then point to the exact panel that tests it. If the question changed during the project, say so and why.
 
-### Q2 — Why these data, labels and splits? Where could leakage enter?
+### Why these data, labels and splits? Where could leakage enter?
 
-**How to answer.** Say why the dataset fits the question, how labels were defined, and how the split was made. Name the leakage risk concretely: same patient in train and test, future data, duplicates, preprocessing fitted on the full set. Then say what you did about it.
+Say why the dataset fits the question, how the label was defined, and how the split was made. Then name the concrete leakage risk: same patient on both sides, future data, duplicates, preprocessing fitted on the full set.
 
-### Q3 — Why this model and baseline? What would a simpler alternative test?
+### Why this model and baseline? What would a simpler alternative test?
 
-**How to answer.** Justify the model by the data type and size. Name the baseline (majority class, logistic regression, no-change) and what a simpler model would isolate — e.g. whether the gain comes from the architecture or just from more parameters.
+Justify the model by data type and size. Name the baseline and what a simpler model would isolate: is the gain from the architecture or just from more parameters?
 
-### Q4 — Which preprocessing, training and hyperparameter choices matter most?
+### Which preprocessing and training choices matter most?
 
-**How to answer.** Pick two or three decisions and say what changes if you flip them. Mention normalisation, class imbalance, augmentation, learning rate, early stopping and seed variance. "We tuned until it worked" is not an answer.
+Pick two or three and say what changes if you flip them: normalisation, class imbalance, augmentation, learning rate, early stopping, seed variance. "We tuned until it worked" is not an answer.
 
-### Q5 — What does each metric measure, and what do your numbers establish?
+### What does each metric measure, and what do your numbers establish?
 
-**How to answer.** Separate discrimination (AUROC) from calibration, and both from the operating point. Say what your number does **not** establish: one split, one site, no confidence intervals means no claim of significance or transportability. For imbalanced data report per-class recall and PPV at a stated prevalence.
+Separate discrimination (AUROC) from calibration, and both from the operating point. Say what the number does **not** establish: one split, one site, no intervals means no claim of significance or transportability.
 
-### Q6 — How does the code reproduce each poster figure and table?
+### How does the code reproduce each figure and table?
 
-**How to answer.** For each panel: input file, script or notebook, command, output. Mention the environment, random seeds and any manual step. If something is not reproducible, say it plainly — that is a limitation, not a disqualification.
+For each panel: input file, script or notebook, command, output. Mention the environment, seeds and any manual step. If something is not reproducible, say it — that is a limitation, not a disqualification.
 
-### Q7 — Where does your approach fail, what is the strongest limitation, and what next?
+### Where does your approach fail, and what would you test next?
 
-**How to answer.** Name the **main** failure mode (not a list of generic ones), the strongest limitation (data, labels, evaluation, compute), and the **one** next experiment that would be decisive. Be honest: a well-understood limitation scores better than a confident overclaim.
+Name the **main** failure mode, the strongest limitation (data, labels, evaluation, compute), and the **one** next experiment that would be decisive. An honest limitation scores better than a confident overclaim.
 
 !!! tip "If you remember one thing"
-    Every claim on your poster should survive the question "compared to what, measured how, on whom?"
+    Every poster claim should survive: "compared to what, measured how, on whom?"

@@ -2,70 +2,87 @@
 
 <div class="meta"><span class="hot">Lecture 5</span><span>~25 min</span><span>The 50% part</span></div>
 
-<p class="lead">A model with good numbers can still be useless or dangerous in a hospital. This lecture is about the gap between a paper and a deployed product: who uses it, on which patients, at which threshold, and who is responsible when it is wrong.</p>
+<p class="lead">A good model is not a good product. This page defines the vocabulary of deployment, one decision at a time, with a question after each.</p>
 
-## In plain words
+## 1. Intended use is the first question
 
-- **Intended use** is the legal and clinical claim: which patients, which decision, and whether the human still decides.
-- **Unit of output.** One score per slide is not a diagnosis. A report needs features, a case-level conclusion, and uncertainty.
-- **Operating point.** Sensitivity and specificity trade off; the threshold is a clinical decision, not a technical one.
-- **Validation.** A CE mark covers the vendor's stated use. Different scanner, antibody, population or case mix is **your** validation job.
-- **Monitoring.** Performance drifts when patients, protocols or treatments change. You need a plan to detect it, and an exit plan.
-- **Human factors.** If the model is always right, people stop checking it — automation bias. Agreement going up is not proof of quality.
-- **Economics.** Saved minutes are capacity, not cash. Ask which cost actually disappears.
+**Explanation.** **Intended use** is the formal statement of what a device is for: which patients, which decision, and whether a human decides. **CE-IVD** (in-vitro diagnostic) is the European mark that a product may be sold for a stated clinical use. **Adjunct** means the clinician reviews everything anyway; **triage** only changes the order; **rule-out** means a negative result may skip a human read; **QC** checks that the sample or slide is usable.
 
-## The deployment checklist
+!!! question "Check yourself"
+    A melanoma model is validated on 1,200 curated slides and offered for 14,000 mixed skin specimens/year. Which specimens are in scope, and what is missing from its output?
 
-Answer any case in this order — most lost points come from starting with AUROC:
+??? success "Answer"
+    Only **melanocytic lesions**: 18% × 14,000 = **2,520 specimens/year**, at ~3 slides each ≈ **7,560 slides**; the other 82% have no validated output. The output is one probability per slide, but a report needs subtype, Bresenham thickness, ulceration, mitotic rate, margins, lymphovascular invasion, regression, and a case-level conclusion — none of which it provides, nor uncertainty.
 
-1. **Intended use** — is this use inside it?
-2. **Unit of output** — slide, case, or patient?
-3. **Local validation** — does the evidence match this site?
-4. **Operating point** — who bears the false positives and the false negatives?
-5. **Monitoring and exit** — how do you notice failure, who signs off?
-6. **Economics** — who pays, who captures the benefit?
+## 2. The output unit decides the aggregation
 
-## Exam questions
+**Explanation.** The **unit of output** is what the score refers to: a **slide**, a **case** (several slides/cores), or a **patient**. If the decision is case-level, you must aggregate slide scores. For **triage**, use the **maximum** slide score per case — any suspicious slide should raise the case. For a **rule-out**, the case is negative only if **every** slide is below the threshold, which is also the maximum rule.
 
-### Q1 — Melanoma model for 14,000 mixed skin specimens
+!!! question "Check yourself"
+    A prostate case has 12 cores on 6 slides. The model outputs a probability per slide. How do you turn this into a case decision for triage, and why not use the mean?
 
-**Answer.** In scope: **melanocytic lesions only**, $0.18 \times 14{,}000 = 2{,}520$ specimens/year, about **7,560 slides/year**; the other 82% have no validated output, and routing is decided at accessioning by the lab, not the model. The output is missing almost everything a report needs: subtype, Bresenham thickness, ulceration, mitotic rate, margins, lymphovascular invasion, and a case-level diagnosis. Routine use is blocked because it is a **research prototype** (no CE-IVD, no intended-use statement), sending slides to an external web app needs a data-processing agreement and GDPR basis, there is no local validation on your scanner and population, and there is no monitoring, quality system or liability agreement.
+??? success "Answer"
+    Use the **maximum** slide probability: suspicious cases go first, so one positive core should raise the case. The mean would dilute a single positive core across many negative slides and could hide exactly the case that needs attention.
 
-### Q2 — Triage, overlay, or benign fast-track?
+## 3. The operating point is a clinical decision
 
-**Answer.** Worklist prioritisation and in-viewer overlay are **inside** an adjunct intended use: every case is still read, so only ordering or display changes; validation must show no delay for the rest and no misses from automation bias. "AI benign" fast-track is **outside** intended use: it converts an adjunct into a rule-out tool, a new clinical claim needing new validation, possibly new regulatory status, and a named person who signs out. Aggregation: use the **maximum** slide score per case for triage, and for fast-track require **every** slide/core below the threshold — a mean would dilute one positive core.
+**Explanation.** The **operating point** is the threshold that turns a score into an action. Lowering it catches more positives (higher sensitivity) but flags more negatives (lower specificity, lower PPV, more workload). **PPV** and **NPV** at that threshold depend on **prevalence**. **AUROC** summarizes all thresholds and therefore does not choose one.
 
-### Q3 — 10,000 slides, 5% prevalence: pick a threshold
+!!! question "Check yourself"
+    10,000 slides/year (40/day), 5% prevalence. A: sens 0.99, spec 0.70. B: sens 0.95, spec 0.90. C: sens 0.85, spec 0.98. Compute PPV and missed positives (FN) for A and C, then choose for (i) an assistant where every slide is read, and (ii) a rule-out where negatives are not read.
 
-**Answer.** With 500 positive and 9,500 negative slides:
+??? success "Answer"
+    A: TP 495, FN **5**, FP 2,850, PPV = 495/3,345 ≈ **14.8%**, NPV 99.92%. C: TP 425, FN **75**, FP 190, PPV = 425/615 ≈ **69.1%**, NPV 99.20%. (i) Assistant → **A**: a false positive costs seconds, a false negative is a missed metastasis. (ii) Rule-out → A or B; the harm is the FN count (A 5, B 25, C 75 per year), so C is defensible only if the lab accepts ~75 unseen metastases. Threshold: clinical lead with lab management and quality sign-off.
 
-| | Sens | Spec | TP | FP | FN | PPV | NPV | Flags/day |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| A | 0.99 | 0.70 | 495 | 2,850 | 5 | 14.8% | 99.92% | 13.4 |
-| B | 0.95 | 0.90 | 475 | 950 | 25 | 33.3% | 99.71% | 5.7 |
-| C | 0.85 | 0.98 | 425 | 190 | 75 | 69.1% | 99.20% | 2.5 |
+## 4. A CE mark covers only the validated use
 
-For an **assistant** (every slide is read anyway) choose **A**: a false positive costs seconds, a false negative is a missed metastasis. For a **rule-out** (negatives are not read) the harm is the missed cases: A = 5, B = 25, C = 75 per year; choose A or B according to the miss rate the lab accepts. The threshold is a clinical risk decision owned by the clinical lead with lab management and quality sign-off — not the vendor. AUROC is useless here because it integrates over all thresholds.
+**Explanation.** A **cut-off** is the value of a biomarker that separates categories (e.g. PD-L1 at 1% and 50%). **ICC** (intraclass correlation) measures agreement on a continuous score across its whole range. **Categorical agreement** measures agreement at the clinically decisive cut-offs. Validation must use a **reference standard** independent of the model — usually a consensus of several pathologists.
 
-### Q4 — CE-IVD PD-L1 model, different antibody/stainer/scanner/specimen
+!!! question "Check yourself"
+    A PD-L1 model is CE-IVD with ICC 0.90, but your lab uses a different antibody, stainer, scanner and cytology cell blocks. What must you validate, with what metric and reference standard?
 
-**Answer.** Antibody, stainer, scanner and specimen type differ from the vendor's validation; some may be covered, cytology cell blocks likely are not — anything outside intended use is **your** validation responsibility and liability. ICC 0.90 is the wrong metric: it measures agreement on the continuous score and can hide poor agreement exactly at the 1% and 50% cut-offs. Validate with **≥60 consecutive routine cases per application**, enriched near the cut-offs, with a consensus of ≥3 pathologists blinded to AI as reference; report categorical agreement, kappa, sensitivity/specificity at each cut-off with confidence intervals, and a Bland–Altman plot near the thresholds.
+??? success "Answer"
+    Anything outside the vendor's intended use is your responsibility: antibody, stainer, scanner and cytology blocks. ICC 0.90 is the wrong metric because it can hide poor agreement at the cut-offs; report **categorical agreement at 1% and 50%** (accuracy, kappa, sensitivity/specificity with confidence intervals) plus a Bland–Altman plot near the thresholds. Use ≥60 consecutive routine cases per application, enriched near the cut-offs; reference standard = consensus of ≥3 pathologists blinded to AI, not a single sign-out.
 
-### Q5 — Case mix drifts and a new HER2-low therapy
+## 5. Monitoring exists to catch drift — including meaning drift
 
-**Answer.** Both explanations are plausible: post-neoadjuvant residual disease genuinely has more 0/1+ cases, and the model may drift with a new case mix or staining. Separate them by comparing the score distribution **within matched subgroups** and checking scanner/stainer changes, agreement over time and override reasons. The old validation is worth **nothing** for the new decision: it only measured negative versus positive, never 0 versus 1+, and no dashboard flags it because the model output and thresholds did not change — only their clinical meaning did. New validation must enrich 0/1+ cases with a consensus reference standard and pre-specified agreement at the therapy decision.
+**Explanation.** **Drift** is a change in the data distribution or in the relationship between score and outcome. Monitoring watches inputs, score distributions, and outcomes. But a change in **clinical meaning** (a new therapy makes 0 versus 1+ decisive) can occur with no change in the model or its numbers, so no dashboard fires.
 
-### Q6 — Zero disagreement among "IHC not needed" cases: 100% NPV?
+!!! question "Check yourself"
+    A HER2 model was validated treating 0 and 1+ as "negative". Case mix changes and a HER2-low therapy makes 0 versus 1+ decisive. Is the old validation still worth anything, and what do you do?
 
-**Answer.** No. Only cases where IHC was **not** ordered were audited, and the same pathologist who saw the AI suggestion wrote the final report (anchoring); no case had a reference standard able to reveal a missed diagnosis, so false negatives were never measured. Design: randomise boundary cases to IHC versus no IHC (MASAI-style), or send a random sample of "not needed" cases to IHC, log AI output and clinical action separately, and pre-register a non-inferiority margin and a safety endpoint. Ethically this is minimal risk (tissue already taken), there is equipoise near the boundary, and the current "100% NPV" claim is itself unvalidated.
+??? success "Answer"
+    Almost nothing: it measured negative versus positive, never 0 versus 1+. Nothing flags it because the model output and thresholds did not change — only what the boundary means. Revalidate by enriching 0/1+ cases (including post-neoadjuvant), using a consensus reference standard, measuring agreement **between 0 and 1+** at the therapy decision, and pre-specifying acceptance. Meanwhile, compare score distributions within matched subgroups to separate patient change from model drift.
 
-### Q7 — Agreement 91% → 98.6%: benefit or bias?
+## 6. Human factors: agreement is not accuracy
 
-**Answer.** Not necessarily benefit — rising agreement is consistent with **automation bias**, readers deferring to the AI. To tell them apart: blinded independent reads, audits including AI-error cases, accuracy before versus after deployment, override outcomes in both directions, and tests with deliberately inserted errors. Reverse-centaur symptoms are raising the daily target, requiring written justification to disagree, and treating a high override rate as a problem. Redesign: AI as second reader, no speed target, one-click logged dismissal, output shown after the first read, calibrated risk statements instead of "confidence 94%". Legally, the radiologist who overrode **with documented justification** is better protected — following the AI is not a defence.
+**Explanation.** **Automation bias** is the tendency to accept a machine's suggestion, especially when it is usually right. **Override** is a clinician rejecting the model. A rising agreement rate can mean better quality — or that people stopped checking.
 
-### Q8 — Does pathology AI pay for itself?
+!!! question "Check yourself"
+    Agreement rises from 91% to 98.6%, reporting time falls 22%, seniors stop using the system and juniors are lost during an outage. Does this prove benefit?
 
-**Answer.** Per year: licence $1{,}800 \times 25 = €45{,}000$; IHC saved $0.30 \times 1{,}800 \times 0.40 = 216$ cases $\times 60 = €12{,}960$; time saved $1{,}800 \times 12/60 = 360$ h, 20% = 72 h $\times 150 = €10{,}800$; validation 0.1 FTE ≈ €20,000; integration €40,000 one-off. Year 1: $12{,}960 + 10{,}800 - 45{,}000 - 20{,}000 - 40{,}000 = \mathbf{-€81{,}240}$; steady state ≈ **−€41{,}240/year**. It does **not** pay for itself unless freed capacity becomes cash — filling vacancies or avoiding locums. The lab pays, the insurer pays a bundled tariff, and urology/patients capture the faster turnaround; the non-financial case is the backlog, complaints and recruitment.
+??? success "Answer"
+    No. Rising agreement is consistent with automation bias, not calibrated trust. Distinguish with blinded independent reads, audits that include AI-error cases, accuracy before versus after, override outcomes in both directions, and deliberately inserted errors. Redesign: AI as second reader or prioritisation, no speed target, one-click logged dismissal, output after the first read, calibrated risk statements, and an opt-out.
+
+## 7. The business case: minutes are not cash
+
+**Explanation.** **FTE** = full-time equivalent, a person's annual working time (loaded cost ≈ €200k in this case). **Tariff** = the fixed price paid for a procedure. Saved clinician minutes are **capacity**, not money, unless they are converted into something (filling a vacancy, avoiding a locum) or the tariff is paid per case.
+
+!!! question "Check yourself"
+    1,800 cases/year; licence €25/case; IHC in 30% at €60, 40% relative reduction; 12 min/case at €150/h, 20% saved; validation 0.1 FTE; integration €40,000. Does it pay for itself in year 1?
+
+??? success "Answer"
+    Licence €45,000. IHC saved: 0.30 × 1,800 × 0.40 = 216 cases × €60 = €12,960. Time saved: 1,800 × 0.2 h = 360 h, 20% = 72 h × €150 = €10,800. Validation ≈ €20,000. Year 1: 12,960 + 10,800 − 45,000 − 20,000 − 40,000 = **−€81,240** (steady state ≈ −€41,240). It does not pay for itself unless freed capacity becomes cash — filling two vacancies or avoiding locums. The lab pays; the insurer pays the bundled tariff; urology and patients capture the faster turnaround.
+
+## 8. The model that cannot be proven wrong
+
+**Explanation.** A **reference standard** is the best available truth. If only cases where the model said "not needed" are audited without doing the test, no false negative can ever be found — **verification bias**. The **prediction paradox**: acting on a prediction destroys the evidence needed to check it.
+
+!!! question "Check yourself"
+    A vendor reports zero discrepancies among cases where IHC was "not needed" and claims 100% NPV. Why is this not evidence, and how would you design a real evaluation?
+
+??? success "Answer"
+    Only cases where IHC was not ordered were audited, and the pathologist saw the AI suggestion (anchoring); no reference standard could reveal a missed diagnosis, so false negatives were never measured. Design: randomise boundary cases to IHC versus no IHC (MASAI-style), or send a random sample of "not needed" cases to IHC; log AI output and clinical action separately; pre-register a non-inferiority margin and a safety endpoint (missed significant cancers). Ethically it is minimal risk because tissue is already taken.
 
 !!! tip "If you remember one thing"
-    For any deployment question: **intended use → unit of output → validation → operating point → monitoring → economics**. Then name who owns the residual risk.
+    For any deployment question: **intended use → unit of output → validation → operating point → monitoring → economics**, then name who owns the residual risk.
