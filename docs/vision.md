@@ -30,6 +30,10 @@
 
 **Explanation.** DINO passes two views through a **student** network and a **teacher** network. The teacher's output is the target; the student is trained to match it. The teacher's weights are an **exponential moving average (EMA)** of the student's: $ \theta_\text{teacher} \leftarrow m\,\theta_\text{teacher} + (1-m)\,\theta_\text{student}$. The **momentum** $m$ controls how slowly the teacher changes.
 
+![DINO: two augmented views, a student predicts the teacher's distribution](images-figures/dino.jpg){ width="470" }
+
+*The student sees one crop and must predict what the teacher sees in another. The teacher is a slow copy of the student, so the targets stay stable.*
+
 !!! question "Check yourself"
     Compare $m = 0$, $0.9$, $0.999$ and $1$. Why does a slowly changing teacher help?
 
@@ -50,6 +54,10 @@
 
 **Explanation.** **CLIP** trains an image encoder and a text encoder together. For a batch of $N$ image–text pairs it maximises the similarity of the $N$ correct pairs and minimises the $N^2-N$ wrong ones — a **contrastive** objective. Afterwards, zero-shot classification compares an image with the embeddings of candidate text prompts.
 
+![CLIP: matching image–text pairs have higher similarity than mismatched pairs](images-figures/clip.jpg){ width="450" }
+
+*The diagonal is correct pairs; everything off the diagonal is pushed apart. At test time the text side becomes a list of prompts.*
+
 !!! question "Check yourself"
     A batch contains two different images paired with the *same* caption. Can each image put all probability on its own copy, and how do you fix it?
 
@@ -69,6 +77,10 @@
 ## 7. Vision–language models need a projection
 
 **Explanation.** A **VLM** such as LLaVA feeds image features into a language model. Vector lengths may match, but the two spaces have different scales and geometry. A learned **projection** maps image features into the language model's embedding space, and alignment/instruction tuning teaches the model to use those visual tokens (usually several tokens, not one).
+
+![VLM: vision encoder → projection → language model](images-figures/vlm.jpg){ width="520" }
+
+*The projection $W$ is the part that must be trained; without it the language model cannot read the image vector, however well the encoder works.*
 
 !!! question "Check yourself"
     A frozen CLIP vector has exactly the same dimension as the LLM's token embeddings. Can you feed it in directly?

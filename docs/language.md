@@ -34,6 +34,14 @@
 
 **Self vs cross.** In **self-attention**, Q, K and V all come from the same sequence. In **cross-attention**, Q comes from one sequence (e.g. the decoder) and K/V from another (e.g. the encoder).
 
+![Attention pooling: a query is compared with keys, the weights mix the values](images-lesson/attention-pooling.jpg){ width="430" }
+
+*Attention is a weighted average: the query decides which values matter. In a Transformer the keys and values are learned projections, not the raw vectors shown here.*
+
+![The same token "mass" gets different attention weights in two sentences](images-lesson/context-mass.jpg){ width="470" }
+
+*Same token, same initial embedding — but "mass" attends to different context words in "abnormal tissue growth" and "amount of matter". That is what makes the final representation context-dependent.*
+
 !!! question "Check yourself"
     In a Transformer encoder–decoder translation model, which attention uses queries from the German sentence and keys/values from the English one?
 
@@ -43,6 +51,10 @@
 ## 4. The causal mask stops the model seeing the future
 
 **Explanation.** During **autoregressive** training (predict the next token), the model must not look at the token it is supposed to predict. A **causal mask** sets the attention weights to zero for all future positions, so position $i$ can only attend to positions $\le i$. Remove it and the model trivially copies the answer — **leakage**.
+
+![Transformer encoder–decoder stack: full attention in the encoder, masked attention in the decoder](images-lesson/transformer-stack.jpg){ width="330" }
+
+*Read the two blocks: the encoder tries to understand, the decoder generates with a mask. The skip connections carry the original signal past each sub-layer.*
 
 !!! question "Check yourself"
     A decoder has two attention layers. Only layer 2 has a causal mask; layer 1 is full attention. Can the representation at "is" already contain information from a later word "absent"?

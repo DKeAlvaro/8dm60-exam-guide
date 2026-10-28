@@ -18,6 +18,10 @@
 
 **Explanation.** **ReAct** interleaves **reasoning** (text about what to do) and **actions** (tool calls), using each observation to decide the next step. **Few-shot ReAct** puts example trajectories in the prompt; the weights do not change.
 
+![The agent loop: model → tool → observation → model, until a stop condition](images-figures/agent-loop.jpg){ width="430" }
+
+*The environment, not the model, executes the tool. The loop exits on a stop condition — success, revision limit, or escalation to a human.*
+
 !!! question "Check yourself"
     After the model requests a search, where does the observation come from, and why can search reduce hallucinations?
 
@@ -43,6 +47,14 @@
 - **Parallelization:** independent subtasks run at the same time, then an aggregator combines them.
 - **Orchestrator–workers:** an orchestrator decides **at runtime** which subtasks are needed, workers do them, a synthesizer combines.
 - **Evaluator–optimizer:** a generator drafts; an evaluator accepts or returns feedback for revision.
+
+![Prompt chaining: fixed stages, one after another](images-figures/chain.jpg){ width="300" }
+![Routing: one request goes to one specialist path](images-figures/routing.jpg){ width="300" }
+![Parallelization: independent calls, one aggregator](images-figures/parallel.jpg){ width="300" }
+![Orchestrator–workers: subtasks chosen at runtime](images-figures/orchestrator.jpg){ width="300" }
+![Evaluator–optimizer: draft, check, revise](images-figures/evaluator.jpg){ width="300" }
+
+*The five patterns side by side. The only structural difference that matters for the exam is **when the decomposition is decided**: before execution (chaining, routing, parallelization) or during execution (orchestrator–workers).*
 
 !!! question "Check yourself"
     Name the pattern for each: (a) extract findings → draft summary → translate; (b) classify a request and send it to a cardiology handler; (c) summarise three independent records at once; (d) decide per case which specialist reviews are needed.

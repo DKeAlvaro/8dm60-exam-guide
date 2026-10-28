@@ -30,6 +30,10 @@
 
 **Term.** *Amortised inference*: one neural network computes the per-cell parameters, instead of optimising them separately for every cell.
 
+![scVI: counts + library size + batch go through an encoder to a latent z, then a decoder predicts ZINB parameters](images-lesson/scvi.jpg){ width="520" }
+
+*Follow the arrows: the encoder sees counts, depth and batch; the latent $z$ is the biological state; the decoder returns mean, dispersion and dropout probability for every gene.*
+
 !!! question "Check yourself"
     Map the five problems — excess zeros, varying depth, batch effects, biological noise, scalability — to the scVI components that handle each.
 
@@ -37,6 +41,10 @@
     (1) ZINB dropout gate → excess zeros. (2) Observed library size as an explicit scaling factor in the mean → depth. (3) Batch as a covariate in encoder and decoder → batch effects. (4) A sampled latent variable with a prior plus dispersion → biological noise. (5) Amortised inference with an encoder and mini-batch gradient descent → scalability.
 
 **What it optimises.** scVI maximises the **ELBO** (evidence lower bound), which has two terms: a **reconstruction term** (how likely are the observed counts under the predicted ZINB?) and a **KL term** (keep the inferred latent variables close to a prior, so the latent space stays smooth and well-behaved). The encoder outputs two latent variables per cell: $z_n$ (low-dimensional biological state) and $l_n$ (library size/depth).
+
+![The five steps of the ELBO: data → encoder → sample z,l → decoder → ZINB likelihood](images-lesson/elbo.jpg){ width="560" }
+
+*Training loops over these five steps. The KL term regularises step 3; the likelihood term scores step 5.*
 
 !!! question "Check yourself"
     In one sentence each, what do the reconstruction term and the KL term push the model to do?
@@ -76,6 +84,10 @@
 
 **Explanation.** A **perturbation** is an intervention on cells: a drug, a gene **knockout** (gene disabled), or a combination. **CPA** (compositional perturbation autoencoder) splits a cell into a **basal state** (the cell without treatment) and a **perturbation effect**, and uses an **adversarial discriminator** to force the basal state to contain no perturbation information. Each perturbation is represented by a **learned embedding**. **Counterfactual** = prediction for a condition not observed.
 
+![CPA: basal state and perturbation embedding are combined to predict treated expression](images-lesson/cpa.jpg){ width="500" }
+
+*The basal state should depend only on the cell; the perturbation embedding only on the treatment. The discriminator checks that the split is real.*
+
 !!! question "Check yourself"
     Can CPA predict a drug never seen in training? What happens if the adversarial weight is set to zero?
 
@@ -86,6 +98,10 @@
 
 **Explanation.** **GEARS** uses two **graphs** (networks of nodes and edges). $G_\text{gene}$ links genes that are **co-expressed** (expressed together). $G_\text{pert}$ links perturbations with **similar downstream effects**. Information is passed along the edges so an unseen knockout can borrow strength from similar perturbations.
 
+![GEARS: gene embeddings meet G_gene, perturbation embeddings meet G_pert, then composition predicts expression](images-lesson/gears.jpg){ width="520" }
+
+*Two separate message-passing paths: co-expression tells you which genes move together; the perturbation graph tells you which interventions behave alike. Only the second lets an unseen knockout borrow from similar ones.*
+
 !!! question "Check yourself"
     Why can GEARS predict the effect of a gene that was never knocked out, and why is $G_\text{gene}$ not enough?
 
@@ -95,6 +111,10 @@
 ## 8. Measuring a good cell embedding
 
 **Explanation.** An embedding is good if it scores well on **both** goals: **biological conservation** (cell types stay separable: clustering, neighbourhood purity, known structure preserved) and **batch integration** (batches mix within cell types, and batch is no longer predictable from the embedding). The **AvgBIO** score summarises biological conservation and the **batch score** summarises integration. Benchmarks show foundation models capture biology but are **not consistently better** than HVG, Harmony or scVI zero-shot, and batch effects remain.
+
+![AvgBIO table: scVI and Harmony are competitive with, or better than, zero-shot foundation models](images-lesson/avg-bio.jpg){ width="470" }
+
+*Read across the datasets: there is no column where the foundation models dominate. That is the exam point — pretraining does not guarantee a better off-the-shelf embedding.*
 
 !!! question "Check yourself"
     An embedding has perfect cell-type clustering but every cluster splits by sequencing batch, and a classifier can predict the batch perfectly. Which score is bad, and what is the risk of fixing it aggressively?

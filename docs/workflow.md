@@ -8,6 +8,10 @@
 
 **Explanation.** **Intended use** is the formal statement of what a device is for: which patients, which decision, and whether a human decides. **CE-IVD** (in-vitro diagnostic) is the European mark that a product may be sold for a stated clinical use. **Adjunct** means the clinician reviews everything anyway; **triage** only changes the order; **rule-out** means a negative result may skip a human read; **QC** checks that the sample or slide is usable.
 
+![The pathology workflow from request to report, and where AI can intervene](images-lesson/pathway.jpg){ width="540" }
+
+*Every stage is a possible product: triage at request, pre-screen of the slide, overlay during reading, or a draft report. Each one is a different intended use with different evidence.*
+
 !!! question "Check yourself"
     A melanoma model is validated on 1,200 curated slides and offered for 14,000 mixed skin specimens/year. Which specimens are in scope, and what is missing from its output?
 
@@ -28,6 +32,10 @@
 Validation depth, regulatory burden and liability all increase as you move down the table.
 
 **Human in vs on the loop.** *In* the loop: every output passes through a human — risk is automation bias, and the human must keep the unassisted skill. *On* the loop: the system acts and the human monitors — risk is **vigilance decrement**, because monitoring a reliable system is something humans are bad at.
+
+![One model, three products: prioritisation, overlay, and report pre-population](images-lesson/three-products.jpg){ width="520" }
+
+*Identical $p(\text{malignant}\mid\text{WSI})$ underneath. The product changes the user, the failure mode and the evidence required — and in the EU can change the device class.*
 
 !!! question "Check yourself"
     A model is sold as an autonomous retinal screener and deployed in primary care where no ophthalmologist is present. Who is accountable, and what must the validation show?
@@ -51,6 +59,10 @@ Validation depth, regulatory burden and liability all increase as you move down 
 
 Papers report AUROC and balanced accuracy; deployment needs **sensitivity/specificity at the shipped threshold**, PPV/NPV at the **true prevalence**, **patient-level** outcomes (not slide-level), **worst-subgroup** performance, and operational endpoints (turnaround time, override rate, interval cancers).
 
+![Three operating points on one ROC curve: rule-in, balanced, screening](images-lesson/roc-points.jpg){ width="430" }
+
+*The curve is the model; the point is the clinical policy. Rule-in accepts many false positives to catch cases; screening accepts many false positives to miss almost nothing.*
+
 !!! question "Check yourself"
     10,000 slides/year (40/day), 5% prevalence. A: sens 0.99, spec 0.70. B: sens 0.95, spec 0.90. C: sens 0.85, spec 0.98. Compute PPV and missed positives (FN) for A and C, then choose for (i) an assistant where every slide is read, and (ii) a rule-out where negatives are not read.
 
@@ -68,6 +80,10 @@ Papers report AUROC and balanced accuracy; deployment needs **sensitivity/specif
     Anything outside the vendor's intended use is your responsibility: antibody, stainer, scanner and cytology blocks. ICC 0.90 is the wrong metric because it can hide poor agreement at the cut-offs; report **categorical agreement at 1% and 50%** (accuracy, kappa, sensitivity/specificity with confidence intervals) plus a Bland–Altman plot near the thresholds. Use ≥60 consecutive routine cases per application, enriched near the cut-offs; reference standard = consensus of ≥3 pathologists blinded to AI, not a single sign-out.
 
 **Four kinds of validation.** *Internal*: held-out split from the same source — did it learn the training distribution? *External*: an independent cohort from another centre/scanner — does it transfer? *Prospective*: consecutive, unselected, real-time cases — does it work on tomorrow's patients? *Site-specific clinical*: local cases on local equipment before go-live. Professional guidance (CAP/ASCP/API 2022) is explicit: validation should emulate the lab's real environment, with at least 60 routine cases per application.
+
+![What a curated paper cohort removes before a case ever reaches the clinical stream](images-lesson/paper-vs-clinic.jpg){ width="470" }
+
+*Unstained slides, folds, artefacts, rare entities and the genuinely ambiguous cases are exactly what gets excluded from a paper cohort — and exactly what the deployed model meets.*
 
 !!! question "Check yourself"
     A paper reports internal validation 0.94 and external 0.81. Which number would you quote to the lab that is buying it, and what is still missing?
