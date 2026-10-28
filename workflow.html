@@ -908,6 +908,8 @@
 
 <h2 id="1-intended-use-is-the-first-question">1. Intended use is the first question<a class="headerlink" href="#1-intended-use-is-the-first-question" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> <strong>Intended use</strong> is the formal statement of what a device is for: which patients, which decision, and whether a human decides. <strong>CE-IVD</strong> (in-vitro diagnostic) is the European mark that a product may be sold for a stated clinical use. <strong>Adjunct</strong> means the clinician reviews everything anyway; <strong>triage</strong> only changes the order; <strong>rule-out</strong> means a negative result may skip a human read; <strong>QC</strong> checks that the sample or slide is usable.</p>
+<p><img alt="The pathology workflow from request to report, and where AI can intervene" src="images-lesson/pathway.jpg" width="540" /></p>
+<p><em>Every stage is a possible product: triage at request, pre-screen of the slide, overlay during reading, or a draft report. Each one is a different intended use with different evidence.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A melanoma model is validated on 1,200 curated slides and offered for 14,000 mixed skin specimens/year. Which specimens are in scope, and what is missing from its output?</p>
@@ -956,6 +958,8 @@
 </table>
 <p>Validation depth, regulatory burden and liability all increase as you move down the table.</p>
 <p><strong>Human in vs on the loop.</strong> <em>In</em> the loop: every output passes through a human — risk is automation bias, and the human must keep the unassisted skill. <em>On</em> the loop: the system acts and the human monitors — risk is <strong>vigilance decrement</strong>, because monitoring a reliable system is something humans are bad at.</p>
+<p><img alt="One model, three products: prioritisation, overlay, and report pre-population" src="images-lesson/three-products.jpg" width="520" /></p>
+<p><em>Identical <span class="arithmatex">\(p(\text{malignant}\mid\text{WSI})\)</span> underneath. The product changes the user, the failure mode and the evidence required — and in the EU can change the device class.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A model is sold as an autonomous retinal screener and deployed in primary care where no ophthalmologist is present. Who is accountable, and what must the validation show?</p>
@@ -977,6 +981,8 @@
 <h2 id="4-the-operating-point-is-a-clinical-decision">4. The operating point is a clinical decision<a class="headerlink" href="#4-the-operating-point-is-a-clinical-decision" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> The <strong>operating point</strong> is the threshold that turns a score into an action. Lowering it catches more positives (higher sensitivity) but flags more negatives (lower specificity, lower PPV, more workload). <strong>PPV</strong> and <strong>NPV</strong> at that threshold depend on <strong>prevalence</strong>. <strong>AUROC</strong> summarizes all thresholds and therefore does not choose one.</p>
 <p>Papers report AUROC and balanced accuracy; deployment needs <strong>sensitivity/specificity at the shipped threshold</strong>, PPV/NPV at the <strong>true prevalence</strong>, <strong>patient-level</strong> outcomes (not slide-level), <strong>worst-subgroup</strong> performance, and operational endpoints (turnaround time, override rate, interval cancers).</p>
+<p><img alt="Three operating points on one ROC curve: rule-in, balanced, screening" src="images-lesson/roc-points.jpg" width="430" /></p>
+<p><em>The curve is the model; the point is the clinical policy. Rule-in accepts many false positives to catch cases; screening accepts many false positives to miss almost nothing.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>10,000 slides/year (40/day), 5% prevalence. A: sens 0.99, spec 0.70. B: sens 0.95, spec 0.90. C: sens 0.85, spec 0.98. Compute PPV and missed positives (FN) for A and C, then choose for (i) an assistant where every slide is read, and (ii) a rule-out where negatives are not read.</p>
@@ -996,6 +1002,8 @@
 <p>Anything outside the vendor's intended use is your responsibility: antibody, stainer, scanner and cytology blocks. ICC 0.90 is the wrong metric because it can hide poor agreement at the cut-offs; report <strong>categorical agreement at 1% and 50%</strong> (accuracy, kappa, sensitivity/specificity with confidence intervals) plus a Bland–Altman plot near the thresholds. Use ≥60 consecutive routine cases per application, enriched near the cut-offs; reference standard = consensus of ≥3 pathologists blinded to AI, not a single sign-out.</p>
 </details>
 <p><strong>Four kinds of validation.</strong> <em>Internal</em>: held-out split from the same source — did it learn the training distribution? <em>External</em>: an independent cohort from another centre/scanner — does it transfer? <em>Prospective</em>: consecutive, unselected, real-time cases — does it work on tomorrow's patients? <em>Site-specific clinical</em>: local cases on local equipment before go-live. Professional guidance (CAP/ASCP/API 2022) is explicit: validation should emulate the lab's real environment, with at least 60 routine cases per application.</p>
+<p><img alt="What a curated paper cohort removes before a case ever reaches the clinical stream" src="images-lesson/paper-vs-clinic.jpg" width="470" /></p>
+<p><em>Unstained slides, folds, artefacts, rare entities and the genuinely ambiguous cases are exactly what gets excluded from a paper cohort — and exactly what the deployed model meets.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A paper reports internal validation 0.94 and external 0.81. Which number would you quote to the lab that is buying it, and what is still missing?</p>

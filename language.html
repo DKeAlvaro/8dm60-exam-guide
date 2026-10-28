@@ -931,6 +931,10 @@
 <h2 id="3-self-attention-mixes-tokens">3. Self-attention mixes tokens<a class="headerlink" href="#3-self-attention-mixes-tokens" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> Each token creates three vectors: a <strong>query</strong> <span class="arithmatex">\(q\)</span> ("what am I looking for?"), a <strong>key</strong> <span class="arithmatex">\(k\)</span> ("what do I contain?") and a <strong>value</strong> <span class="arithmatex">\(v\)</span> ("what do I pass on?"). The model compares each query with all keys (dot product), turns the scores into weights with <strong>softmax</strong> (a function that makes a list of scores sum to 1), and uses the weights to average the values. That average is the token's new, context-aware representation. Written as a matrix: <span class="arithmatex">\(\mathrm{softmax}(QK^\top/\sqrt{d_k})V\)</span>, where <span class="arithmatex">\(\sqrt{d_k}\)</span> keeps the scores from growing too large. <strong>Multi-head attention</strong> runs several of these in parallel so different heads can track different relationships.</p>
 <p><strong>Self vs cross.</strong> In <strong>self-attention</strong>, Q, K and V all come from the same sequence. In <strong>cross-attention</strong>, Q comes from one sequence (e.g. the decoder) and K/V from another (e.g. the encoder).</p>
+<p><img alt="Attention pooling: a query is compared with keys, the weights mix the values" src="images-lesson/attention-pooling.jpg" width="430" /></p>
+<p><em>Attention is a weighted average: the query decides which values matter. In a Transformer the keys and values are learned projections, not the raw vectors shown here.</em></p>
+<p><img alt="The same token &quot;mass&quot; gets different attention weights in two sentences" src="images-lesson/context-mass.jpg" width="470" /></p>
+<p><em>Same token, same initial embedding — but "mass" attends to different context words in "abnormal tissue growth" and "amount of matter". That is what makes the final representation context-dependent.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>In a Transformer encoder–decoder translation model, which attention uses queries from the German sentence and keys/values from the English one?</p>
@@ -941,6 +945,8 @@
 </details>
 <h2 id="4-the-causal-mask-stops-the-model-seeing-the-future">4. The causal mask stops the model seeing the future<a class="headerlink" href="#4-the-causal-mask-stops-the-model-seeing-the-future" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> During <strong>autoregressive</strong> training (predict the next token), the model must not look at the token it is supposed to predict. A <strong>causal mask</strong> sets the attention weights to zero for all future positions, so position <span class="arithmatex">\(i\)</span> can only attend to positions <span class="arithmatex">\(\le i\)</span>. Remove it and the model trivially copies the answer — <strong>leakage</strong>.</p>
+<p><img alt="Transformer encoder–decoder stack: full attention in the encoder, masked attention in the decoder" src="images-lesson/transformer-stack.jpg" width="330" /></p>
+<p><em>Read the two blocks: the encoder tries to understand, the decoder generates with a mask. The skip connections carry the original signal past each sub-layer.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A decoder has two attention layers. Only layer 2 has a causal mask; layer 1 is full attention. Can the representation at "is" already contain information from a later word "absent"?</p>

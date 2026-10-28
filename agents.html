@@ -852,6 +852,8 @@
 </details>
 <h2 id="2-react-reason-act-observe">2. ReAct: reason, act, observe<a class="headerlink" href="#2-react-reason-act-observe" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> <strong>ReAct</strong> interleaves <strong>reasoning</strong> (text about what to do) and <strong>actions</strong> (tool calls), using each observation to decide the next step. <strong>Few-shot ReAct</strong> puts example trajectories in the prompt; the weights do not change.</p>
+<p><img alt="The agent loop: model → tool → observation → model, until a stop condition" src="images-figures/agent-loop.jpg" width="430" /></p>
+<p><em>The environment, not the model, executes the tool. The loop exits on a stop condition — success, revision limit, or escalation to a human.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>After the model requests a search, where does the observation come from, and why can search reduce hallucinations?</p>
@@ -879,6 +881,12 @@
 <li><strong>Orchestrator–workers:</strong> an orchestrator decides <strong>at runtime</strong> which subtasks are needed, workers do them, a synthesizer combines.</li>
 <li><strong>Evaluator–optimizer:</strong> a generator drafts; an evaluator accepts or returns feedback for revision.</li>
 </ul>
+<p><img alt="Prompt chaining: fixed stages, one after another" src="images-figures/chain.jpg" width="300" />
+<img alt="Routing: one request goes to one specialist path" src="images-figures/routing.jpg" width="300" />
+<img alt="Parallelization: independent calls, one aggregator" src="images-figures/parallel.jpg" width="300" />
+<img alt="Orchestrator–workers: subtasks chosen at runtime" src="images-figures/orchestrator.jpg" width="300" />
+<img alt="Evaluator–optimizer: draft, check, revise" src="images-figures/evaluator.jpg" width="300" /></p>
+<p><em>The five patterns side by side. The only structural difference that matters for the exam is <strong>when the decomposition is decided</strong>: before execution (chaining, routing, parallelization) or during execution (orchestrator–workers).</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>Name the pattern for each: (a) extract findings → draft summary → translate; (b) classify a request and send it to a cardiology handler; (c) summarise three independent records at once; (d) decide per case which specialist reviews are needed.</p>

@@ -929,6 +929,8 @@
 </details>
 <h2 id="3-dino-a-student-learns-from-a-slow-teacher">3. DINO: a student learns from a slow teacher<a class="headerlink" href="#3-dino-a-student-learns-from-a-slow-teacher" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> DINO passes two views through a <strong>student</strong> network and a <strong>teacher</strong> network. The teacher's output is the target; the student is trained to match it. The teacher's weights are an <strong>exponential moving average (EMA)</strong> of the student's: $ \theta_\text{teacher} \leftarrow m\,\theta_\text{teacher} + (1-m)\,\theta_\text{student}$. The <strong>momentum</strong> <span class="arithmatex">\(m\)</span> controls how slowly the teacher changes.</p>
+<p><img alt="DINO: two augmented views, a student predicts the teacher's distribution" src="images-figures/dino.jpg" width="470" /></p>
+<p><em>The student sees one crop and must predict what the teacher sees in another. The teacher is a slow copy of the student, so the targets stay stable.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>Compare <span class="arithmatex">\(m = 0\)</span>, <span class="arithmatex">\(0.9\)</span>, <span class="arithmatex">\(0.999\)</span> and <span class="arithmatex">\(1\)</span>. Why does a slowly changing teacher help?</p>
@@ -949,6 +951,8 @@
 </details>
 <h2 id="5-clip-match-images-with-text">5. CLIP: match images with text<a class="headerlink" href="#5-clip-match-images-with-text" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> <strong>CLIP</strong> trains an image encoder and a text encoder together. For a batch of <span class="arithmatex">\(N\)</span> image–text pairs it maximises the similarity of the <span class="arithmatex">\(N\)</span> correct pairs and minimises the <span class="arithmatex">\(N^2-N\)</span> wrong ones — a <strong>contrastive</strong> objective. Afterwards, zero-shot classification compares an image with the embeddings of candidate text prompts.</p>
+<p><img alt="CLIP: matching image–text pairs have higher similarity than mismatched pairs" src="images-figures/clip.jpg" width="450" /></p>
+<p><em>The diagonal is correct pairs; everything off the diagonal is pushed apart. At test time the text side becomes a list of prompts.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A batch contains two different images paired with the <em>same</em> caption. Can each image put all probability on its own copy, and how do you fix it?</p>
@@ -969,6 +973,8 @@
 </details>
 <h2 id="7-visionlanguage-models-need-a-projection">7. Vision–language models need a projection<a class="headerlink" href="#7-visionlanguage-models-need-a-projection" title="Permanent link">#</a></h2>
 <p><strong>Explanation.</strong> A <strong>VLM</strong> such as LLaVA feeds image features into a language model. Vector lengths may match, but the two spaces have different scales and geometry. A learned <strong>projection</strong> maps image features into the language model's embedding space, and alignment/instruction tuning teaches the model to use those visual tokens (usually several tokens, not one).</p>
+<p><img alt="VLM: vision encoder → projection → language model" src="images-figures/vlm.jpg" width="520" /></p>
+<p><em>The projection <span class="arithmatex">\(W\)</span> is the part that must be trained; without it the language model cannot read the image vector, however well the encoder works.</em></p>
 <div class="admonition question">
 <p class="admonition-title">Check yourself</p>
 <p>A frozen CLIP vector has exactly the same dimension as the LLM's token embeddings. Can you feed it in directly?</p>
