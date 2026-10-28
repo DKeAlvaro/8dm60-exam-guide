@@ -4,9 +4,9 @@
 
 <p class="lead">One short page per topic. Every idea is explained in plain words and ends with a question — answer it before you open the answer.</p>
 
-![The course in one picture: images, text, omics, EHR and structural data feed models that answer clinical questions](images-lesson/multimodal-ai.jpg){ width="560" }
+![8DM60: Multimodal AI in Biomedicine — course setup and language-model foundations](images-lesson/8dm60-title.jpg){ width="560" }
 
-*Five data types, one model family: this is why the course is called multimodal.*
+*8DM60, given by Federica Eduati and Mitko Veta.*
 
 ## If you only have two hours
 
